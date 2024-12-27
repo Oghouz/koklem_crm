@@ -1,5 +1,29 @@
 @extends('layouts.app')
 
+@section('style')
+<style>
+        /* Pour s’assurer que la liste suggestions se superpose bien */
+        .suggestions-list {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000; /* Pour que la liste passe au-dessus d'autres éléments */
+        }
+
+        .suggestions-list li {
+            padding: .5rem .75rem;
+            cursor: pointer;
+        }
+
+        .suggestions-list li:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+@endsection
+
 @section('content')
 @if (session('status'))
     <div class="alert alert-success" role="alert">
@@ -41,6 +65,7 @@
                     <div class="mb-3">
                         <label for="address1" class="form-label">Adresse</label>
                         <input type="text" class="form-control" id="address1" name="address1">
+                        <ul class="list-unstyled suggestions-list mt-1 d-none" id="suggestions-list"></ul>
                     </div>
                     <div class="mb-3">
                         <label for="address2" class="form-label">Adresse complément</label>
@@ -83,11 +108,83 @@
             </div>
         </div>
     </div>
-    
-
 </form>
+@endsection
 
+@section('script')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('address1');
+    const suggestionsList = document.getElementById('suggestions-list');
+    const cityInput = document.getElementById('city');
+    const postcodeInput = document.getElementById('zip_code');
+    let debounceTimer;
 
+    input.addEventListener('input', () => {
+        const query = input.value.trim();
+        
+        if (query.length < 3) {
+            suggestionsList.innerHTML = '';
+            suggestionsList.classList.add('d-none');
+            return;
+        }
 
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            fetchSuggestions(query);
+        }, 300);
+    });
 
+    function fetchSuggestions(query) {
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&countrycodes=fr&q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                displaySuggestions(data);
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    }
+
+    function displaySuggestions(data) {
+        suggestionsList.innerHTML = '';
+
+        if (data.length === 0) {
+            suggestionsList.classList.add('d-none');
+            return;
+        }
+
+        data.forEach(item => {
+            const li = document.createElement('li');
+            const address = item.address || {};
+            const city = address.city || address.town || address.village || '';
+            const postcode = address.postcode || '';
+            let address_display = item.address.house_number+' '+item.address.road+' '+postcode+' '+city;
+            console.log(item)
+            // li.textContent = item.display_name;
+            li.textContent = address_display;
+            li.addEventListener('click', () => {
+                // input.value = item.display_name;
+                input.value = item.address.house_number+' '+item.address.road;
+                suggestionsList.innerHTML = '';
+                suggestionsList.classList.add('d-none');
+
+                // Remplir les champs dédiés
+                cityInput.value = city;
+                postcodeInput.value = postcode;
+            });
+            suggestionsList.appendChild(li);
+        });
+
+        suggestionsList.classList.remove('d-none');
+    }
+
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('.position-relative')) {
+            suggestionsList.innerHTML = '';
+            suggestionsList.classList.add('d-none');
+        }
+    });
+});
+</script>
 @endsection

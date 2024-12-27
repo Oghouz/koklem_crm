@@ -7,40 +7,39 @@
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <style type="text/css">
     body {
-  margin: 0;
-  padding: 0;
-  background-color: #17a2b8;
-  height: 100vh;
-}
-#login .container #login-row #login-column #login-box {
-  margin-top: 120px;
-  max-width: 600px;
-  height: 320px;
-  border: 1px solid #9C9C9C;
-  background-color: #EAEAEA;
-}
-#login .container #login-row #login-column #login-box #login-form {
-  padding: 20px;
-}
-#login .container #login-row #login-column #login-box #login-form #register-link {
-  margin-top: -85px;
-}    </style>
+        background: url({{asset('images/login_background.jpg')}}) no-repeat center center fixed;
+        background-size: cover
+        height: 100vh";
+    }
+    #login .container #login-row #login-column #login-box {
+        margin-top: 120px;
+        max-width: 600px;
+        height: 350px;
+        border-radius: 10px;
+        background-color: #EAEAEA;
+    }
+    #login .container #login-row #login-column #login-box #login-form {
+        padding: 20px;
+    }
+    #login .container #login-row #login-column #login-box #login-form #register-link {
+        margin-top: -85px;
+    }    
+</style>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-    
     <div id="login">
-        <h3 class="text-center text-white pt-5">SAS KOKLEM</h3>
+        <h1 class="text-center text-secondary pt-5">KOKLEM</h1>
         <div class="container">
             <div id="login-row" class="row justify-content-center align-items-center">
                 <div id="login-column" class="col-md-6">
                     <div id="login-box" class="col-md-12">
                         <form method="POST" action="{{ route('login') }}">
                             @csrf
-                            <h3 class="text-center text-info">DASHBOARD</h3>
+                            <h3 class="text-center p-3">DASHBOARD</h3>
                             <div class="form-group">
-                                <label for="email" class="text-info">Identifiant:</label><br>
+                                <label for="email">Identifiant:</label><br>
                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
@@ -49,7 +48,7 @@
                                 @enderror
                             </div>
                             <div class="form-group">
-                                <label for="password" class="text-info">Mot de passe:</label><br>
+                                <label for="password">Mot de passe:</label><br>
                                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">

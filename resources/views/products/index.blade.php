@@ -23,7 +23,7 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Réf</th>
+            <th></th>
             <th>Nom</th>
             <th>Catégorie</th>
             <th></th>
@@ -33,8 +33,19 @@
         @foreach($products as $product)
         <tr>
             <th scope="row">#{{$product->id}}</th>
-            <td class="fw-bold">{{$product->reference}}</td>
-            <td>{{$product->name}}</td>
+            <td>
+                <a href="{{route('product.show', ['product'=>$product])}}">
+                    @if($product->image)
+                    <img src="{{asset('images/products/').'/'.$product->image}}" alt="" width="64">
+                    @else
+                    <i class="fa fa-shirt fa-2x"></i>
+                    @endif
+                </a>
+            </td>
+            <td>
+                <span class="fw-bold">{{$product->reference}}</span>
+                <p class="">{{$product->name}}</p>
+            </td>
             <td>
                 <span class="badge bg-secondary">{{$product->category->name}}</span>
             </td>

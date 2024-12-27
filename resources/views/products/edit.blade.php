@@ -22,6 +22,7 @@
 @endif
 <form action="{{route('product.update', ['product' => $product])}}" method="POST">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <a href={{route('product.index')}} class="btn btn-secondary"><i class="fa fa-arrow-left"></i> Retour</a>
         <h1 class="h2">Mettre à jours Produit</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
@@ -54,6 +55,18 @@
                         <input type="text" class="form-control" id="name" name="name" value="{{$product->name}}">
                     </div>
                     <div class="mb-3">
+                        <label for="size" class="form-label">Taille</label>
+                        <select name="size" id="size" class="form-control">
+                            <option value="" selected disabled>- Séléctionner la taille -</option>
+                            <option value="xs" @if($product->size =='xs') selected @endif>XS</option>
+                            <option value="s" @if($product->size =='s') selected @endif>S</option>
+                            <option value="m" @if($product->size =='m') selected @endif>M</option>
+                            <option value="l" @if($product->size =='l') selected @endif>L</option>
+                            <option value="xl" @if($product->size =='xl') selected @endif>XL</option>
+                            <option value="xxl" @if($product->size =='xxl') selected @endif>XXL</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="description" class="form-label">Description de produit</label>
                         <textarea class="form-control" name="description" id="description" cols="30" rows="3">{{$product->description}}</textarea>
                     </div>
@@ -70,12 +83,22 @@
                         </select>
                     </div>
                     <div class="mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="stock" name="stock" value="{{$product->stock}}">
+                    </div>
+                    <div class="mb-3">
                         <label for="image" class="form-label">Photo</label>
                         <input class="form-control" type="file" id="image" name="image">
+                        <p>{{$product->image}}</p>
                     </div>
                 </div>
             </div>
         </div>
+        @if($product->image)
+        <div class="col-md-6">
+            <img class="img-thumbnail " src="{{asset('images/products').'/'.$product->image}}" alt="">
+        </div>
+        @endif
     </div>
 
 </form>

@@ -46,8 +46,10 @@ class ProductController extends Controller
             'reference' => 'required|string|max:255|unique:products,reference',
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
+            'size' => 'nullable|string|max:10',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'stock' => 'nullable|numeric|min:0',
             'tva_id' => 'required|exists:tvas,id'
         ]);
 
@@ -56,7 +58,7 @@ class ProductController extends Controller
 
         // Créer et enregistrer le produit
         $product = new Product();
-        $product->fill($request->only(['reference', 'category_id', 'name', 'description', 'price', 'tva_id']));
+        $product->fill($request->only(['reference', 'category_id', 'name', 'size', 'description', 'price','stock','tva_id']));
         $product->created_by = $user->id;
         $product->updated_by = $user->id;
         $product->save();
@@ -70,7 +72,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        return view('products.show', compact('product'));
     }
 
     /**
@@ -97,16 +99,18 @@ class ProductController extends Controller
         // Valider les données entrantes.
         // Note : pour la règle unique, on exclut l'ID actuel du produit.
         $validatedData = $request->validate([
-            'reference' => 'required|string|max:255|unique:products,reference,' . $product->id,
+            'reference' => 'required|unique:products,reference,' . $product->id,
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
+            'size' => 'nullable|string|max:10',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'stock' => 'nullable|numeric|min:0',
             'tva_id' => 'required|exists:tvas,id'
         ]);
 
         // Mettre à jour les champs remplissables du modèle
-        $product->fill($request->only(['reference', 'category_id', 'name', 'description', 'price', 'tva_id']));
+        $product->fill($request->only(['reference', 'category_id', 'name', 'size', 'description', 'price', 'stock', 'tva_id']));
         $product->updated_by = $user->id;
         $product->save();
 

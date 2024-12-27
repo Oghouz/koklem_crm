@@ -44,6 +44,17 @@
                         <input type="text" class="form-control" id="name" name="name">
                     </div>
                     <div class="mb-3">
+                        <select name="size" id="size" class="form-control">
+                            <option value="" selected disabled>- Séléctionner la taille -</option>
+                            <option value="xs">XS</option>
+                            <option value="s">S</option>
+                            <option value="m">M</option>
+                            <option value="l">L</option>
+                            <option value="xl">XL</option>
+                            <option value="xxl">XXL</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="description" class="form-label">Description de produit</label>
                         <textarea class="form-control" name="description" id="description" cols="30" rows="3"></textarea>
                     </div>

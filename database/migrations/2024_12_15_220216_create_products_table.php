@@ -15,11 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('reference')->unique();
             $table->string('name');
+            $table->string('size');
             $table->mediumText('description')->nullable();
-            $table->string('image')->nullable();
+            $table->string('image')->default('default.png');
             $table->decimal('price', 10, 2)->nullable();
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('tva_id');
+            $table->integer('stock')->nullable();
             $table->boolean('published')->default(true);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');

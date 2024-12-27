@@ -31,4 +31,9 @@ class Client extends Model
         'created_by',
         'updated_by'
     ];
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'client_id');
+    }
 }
