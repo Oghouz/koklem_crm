@@ -1,31 +1,5 @@
 @extends('layouts.app')
 
-@section('style')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-<style>
-        /* Pour s’assurer que la liste suggestions se superpose bien */
-        .suggestions-list {
-            position: absolute;
-            background-color: #fff;
-            border: 1px solid #ced4da;
-            border-radius: .25rem;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000; /* Pour que la liste passe au-dessus d'autres éléments */
-        }
-
-        .suggestions-list li {
-            padding: .5rem .75rem;
-            cursor: pointer;
-        }
-
-        .suggestions-list li:hover {
-            background-color: #f8f9fa;
-        }
-    </style>
-@endsection
-
 @section('content')
 @if (session('status'))
     <div class="alert alert-success" role="alert">
@@ -156,7 +130,6 @@
 @endsection
 
 @section('script')
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 $(document).ready(function() {
   $('.select-product').select2({

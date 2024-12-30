@@ -141,6 +141,7 @@ class OrderController extends Controller
                 'line_total' => $lineTotal,
                 'comment' => null,
                 'updated_by' => $user->id,
+                'created_by' => $user->id,
             ]);
         }
 

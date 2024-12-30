@@ -32,10 +32,23 @@
             </select>
         </div>
         <div class="mb-3">
-            <label for="status">Statut</label>
-            <select name="status" id="status">
-
-            </select>
+            <div class="row gx-3">
+                <div class="col-sm-6">
+                    <label for="status">Statut Commande</label>
+                    <select name="status" id="status" class="form-control">
+                        @foreach(\App\Models\Order::getStatusLabel() as $order_status_i => $order_status)
+                            <option value="{{$order_status_i}}" {{$order->status == $order_status_i ? 'selected' : ''}}>{{$order_status}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <label for="payment_status">Paiement</label>
+                    <select name="payment_status" id="payment_status" class="form-control">
+                        
+                    </select>
+                </div>
+            </div>
+            
         </div>
 
         {{-- Commentaire global --}}
@@ -51,6 +64,7 @@
             <thead>
             <tr>
                 <th>Produit</th>
+                <th>Taille</th>
                 <th>Quantité</th>
                 <th>Prix</th>
                 <th></th>
@@ -73,6 +87,17 @@
                                     @endforeach
                                 </select>
                             </td>
+                            <td>
+                                <select name="lines[{{ $index }}][size]" id="size" class="form-control">
+                                    <option value="ALT" {{$line->size == 'ALT' ? 'selected' : ''}}>à la taille</option>
+                                    <option value="XS" {{$line->size == 'XS' ? 'selected' : ''}}>XS</option>
+                                    <option value="S"  {{$line->size == 'S' ? 'selected' : ''}}>S</option>
+                                    <option value="L"  {{$line->size == 'M' ? 'selected' : ''}}>M</option>
+                                    <option value="L"  {{$line->size == 'L' ? 'selected' : ''}}>L</option>
+                                    <option value="XL" {{$line->size == 'XL' ? 'selected' : ''}}>XL</option>
+                                    <option value="XXL" {{$line->size == 'XXL' ? 'selected' : ''}}>XXL</option>
+                                </select>
+                            </td>
                             <td><input type="number" step="1" min="1" name="lines[{{ $i }}][quantity]" class="form-control" value="{{ $line['quantity'] }}" /></td>
                             <td><input type="number" step="0.01" min="0" name="lines[{{ $i }}][price]" class="form-control" value="{{ $line['price'] }}" /></td>
                             <td><button type="button" class="btn btn-danger btn-sm remove-line">X</button></td>
@@ -90,6 +115,17 @@
                                             {{ $product->name }}
                                         </option>
                                     @endforeach
+                                </select>
+                            </td>
+                            <td>
+                                <select name="lines[{{ $index }}][size]" id="size" class="form-control">
+                                    <option value="ALT" {{$line->size == 'ALT' ? 'selected' : ''}}>à la taille</option>
+                                    <option value="XS" {{$line->size == 'XS' ? 'selected' : ''}}>XS</option>
+                                    <option value="S"  {{$line->size == 'S' ? 'selected' : ''}}>S</option>
+                                    <option value="L"  {{$line->size == 'M' ? 'selected' : ''}}>M</option>
+                                    <option value="L"  {{$line->size == 'L' ? 'selected' : ''}}>L</option>
+                                    <option value="XL" {{$line->size == 'XL' ? 'selected' : ''}}>XL</option>
+                                    <option value="XXL" {{$line->size == 'XXL' ? 'selected' : ''}}>XXL</option>
                                 </select>
                             </td>
                             <td><input type="number" step="1" min="1" name="lines[{{ $index }}][quantity]" class="form-control" value="{{ $line->quantity }}" /></td>
@@ -124,7 +160,6 @@
 @endsection
 
 @section('script')
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 $(document).ready(function() {
   $('.select-product').select2({

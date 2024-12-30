@@ -43,7 +43,7 @@ class Order extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public static function getStatusLabel($status)
+    public static function getStatusLabel($status = null)
     {
         $labels = [
             self::ORDER_STATUS_PENDING => 'En attente',
