@@ -7,10 +7,10 @@
     </div>
 @endif
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Gestion de Produit</h1>
+    <h1 class="h2">Gestion de Design</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
     <div class="btn-group me-2">
-        <a href="{{route('product.create')}}" type="button" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Nouveau</a>
+        <a href="{{route('design.create')}}" type="button" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Nouveau</a>
         <button type="button" class="btn btn-sm btn-info">Export</button>
     </div>
     <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
@@ -23,30 +23,24 @@
     <thead>
         <tr>
             <th>ID</th>
+            <th></th>
             <th>Réference</th>
             <th>Nom</th>
-            <th class="text-center">Couleur</th>
-            <th class="text-center">Taille</th>
-            <th class="text-center">Stock</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach($products as $product)
+        @foreach($designs as $design)
         <tr>
-            <th scope="row">#{{$product->id}}</th>
+            <td scope="row">#{{$design->id}}</td>
             <td>
-                <span class="fw-bold">{{$product->reference}}</span>
+                <img src="{{asset('images/designs/').'/'.$design->image}}" height="64">
             </td>
-            <td>{{$product->name}}</td>
-            <td class="text-center">
-                <span class="badge bg-secondary"><i class="fa-solid fa-shirt" style="color:{{$product->color->code}}"></i> {{$product->color->name}}</span>
+            <td>
+                <span class="fw-bold">{{$design->reference}}</span>
             </td>
-            <td class="text-center">
-                <span class="badge bg-dark">{{$product->size}}</span>
-            </td>
-            <td class="fw-bold text-center">{{$product->stock}}</td>
-            <td class="text-end"><a href="{{route('product.edit', ['product' => $product])}}" class="btn btn-link"><i class="fa fa-edit"></i></a></td>
+            <td>{{$design->name}}</td>
+            <td class="text-end"><a href="{{route('design.edit', ['design' => $design])}}" class="btn btn-link"><i class="fa fa-edit"></i></a></td>
         </tr>
         @endforeach
     </tbody>

@@ -40,8 +40,9 @@
             <th>ID</th>
             <th>Société</th>
             <th>Status</th>
-            <th>Date</th>
-            <th>PAyé</th>
+            <th>Date de commande</th>
+            <th>Livré</th>
+            <th>Payé</th>
             <th class="text-end">Total</th>
             <th></th>
         </tr>
@@ -52,18 +53,25 @@
             <th scope="row">#{{$order->id}}</th>
             <td>
                 <span class="fw-bold">{{$order->client->company}}</span>
-                <p class="p-0 m-0 fs-6">{{$order->client->zip_code.' '.$order->client->city}}</p>
+                <p class="p-0 m-0">{{$order->client->zip_code.' '.$order->client->city}}</p>
             </td>
             <td>{!! \App\Models\Order::getStatusBadge($order->status)!!}</td>
-            <td>{{$order->created_at->format('d/m/Y H:i')}}</td>
+            <td>{{$order->created_at->format('d/m/Y')}}</td>
             <td>
-                @if($order->payment_status == 1)
-                    <span class="badge bg-danger">Non Payé</span>
+                @if($order->delivery_date)
+                    <span class="badge bg-dark">{{$order->delivery_date}}</span> 
                 @else
-                    <span class="badge bg-success">Payé</span> 
+                    <span class="badge bg-danger">Non livré</span>
                 @endif
             </td>
-            <td class=text-end>{{number_format($order->total, 2, ',', ' ')}}€</td>
+            <td>
+                @if($order->paid)
+                    <span class="badge bg-success">Payé</span> 
+                @else
+                    <span class="badge bg-danger">Non Payé</span>
+                @endif
+            </td>
+            <td class=text-end>{{number_format($order->total_ttc, 2, ',', ' ')}}€</td>
             <td class="text-end"><a href="{{route('order.edit', ['order' => $order])}}" class="btn btn-link"><i class="fa fa-edit"></i></a></td>
         </tr>
         @endforeach

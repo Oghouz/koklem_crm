@@ -1,16 +1,29 @@
 @extends('layouts.app')
 
 @section('content')
-@if (session('status'))
-    <div class="alert alert-success" role="alert">
-        {{ session('status') }}
+<div class="row">
+    <div class="col">
+        @if (session('status'))
+            <div class="alert alert-success" role="alert">
+                {{ session('status') }}
+            </div>
+        @endif
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </div>
-@endif
-@if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
+</div>
 
 <div class="container-fluid">
 
@@ -55,37 +68,44 @@
                 {{-- Première ligne par défaut --}}
                 <tr>
                     <td>
-                        <select name="lines[0][product_id]" class="form-select select-product">
-                            <option value="">-- Sélectionnez un produit --</option>
-                            @foreach($products as $product)
-                                <option value="{{ $product->id }}" data-thumbnail="{{ asset('images/products/'.$product->image) }}">
-                                    {{$product->name}}
+                        <select name="lines[0][design_id]" class="form-select select-product">
+                            <option value="">- Sélectionner un produit -</option>
+                            @foreach($designs as $design)
+                                <option value="{{ $design->id }}" data-thumbnail="{{ asset('images/designs/'.$design->image) }}">
+                                    {{ $design->name }}
                                 </option>
                             @endforeach
                         </select>
                     </td>
                     <td>
-                        <select name="size" id="size" class="form-control">
-                            <option value="ALT">à la taille</option>
-                            <option value="xs">XS</option>
-                            <option value="s">S</option>
-                            <option value="m">M</option>
-                            <option value="l">L</option>
-                            <option value="xl">XL</option>
-                            <option value="xxl">XXL</option>
+                        <select name="lines[0][size]" class="form-control select-size">
+                            <option value="ALT">À la taille</option>
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
                         </select>
                     </td>
                     <td>
-                        <input type="number" step="1" min="1" name="lines[0][quantity]" class="form-control" value="1" />
+                        <input type="number" step="1" min="1" name="lines[0][quantity]" class="form-control quantity" value="1" />
                     </td>
                     <td>
-                        <input type="number" step="0.01" min="0" name="lines[0][price]" class="form-control" />
+                        <input type="number" step="0.01" min="0" name="lines[0][price]" class="form-control price" />
                     </td>
                     <td>
-                        {{-- Bouton pour supprimer la ligne si besoin --}}
+                        <button type="button" class="btn btn-danger btn-sm remove-line">X</button>
                     </td>
                 </tr>
             </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="2">TOTAL: </th>
+                    <th class="text-center" id="total-quantity">0</th>
+                    <th class="text-end" id="total-price">0.00€</th>
+                </tr>
+            </tfoot>
         </table>
         <button type="button" id="add-line" class="btn btn-secondary"><i class="fa fa-plus"></i> Ajouter une ligne</button>
         <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Enregistrer la commande</button>
@@ -96,86 +116,106 @@
 <template id="order-line-template">
     <tr>
         <td>
-            <select name="##product_id##" class="form-select select-product">
+            <select name="##design_id##" class="form-select select-product">
                 <option value="">-- Sélectionnez un produit --</option>
-                @foreach($products as $product)
-                    <option value="{{ $product->id }}" data-thumbnail="{{ asset('images/products/'.$product->image) }}">
-                        [{{$product->reference}}] - {{$product->name}}
+                @foreach($designs as $design)
+                    <option value="{{ $design->id }}" data-thumbnail="{{ asset('images/designs/'.$design->image) }}">
+                        {{ $design->name }}
                     </option>
                 @endforeach
             </select>
         </td>
         <td>
-            <select name="size" id="size" class="form-control">
-                <option value="ALT">à la taille</option>
-                <option value="xs">XS</option>
-                <option value="s">S</option>
-                <option value="m">M</option>
-                <option value="l">L</option>
-                <option value="xl">XL</option>
-                <option value="xxl">XXL</option>
+            <select name="##size##" class="form-control select-size">
+                <option value="ALT">À la taille</option>
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
             </select>
         </td>
         <td>
-            <input type="number" step="1" min="1" name="##quantity##" class="form-control" value="1" />
+            <input type="number" step="1" min="1" name="##quantity##" class="form-control quantity" value="1" />
         </td>
         <td>
-            <input type="number" step="0.01" min="0" name="##price##" class="form-control" />
+            <input type="number" step="0.01" min="0" name="##price##" class="form-control price" />
         </td>
         <td>
             <button type="button" class="btn btn-danger btn-sm remove-line">X</button>
         </td>
     </tr>
 </template>
+
 @endsection
 
 @section('script')
 <script>
 $(document).ready(function() {
-  $('.select-product').select2({
-    templateResult: formatState,
-    templateSelection: formatState
-  });
-});
-document.addEventListener('DOMContentLoaded', () => {
-    let lineIndex = 1;
-    const addLineBtn = document.getElementById('add-line');
-    const orderLinesTbody = document.getElementById('order-lines');
-    const lineTemplate = document.getElementById('order-line-template').innerHTML;
+    $('.select-product').select2({
+        templateResult: formatState,
+        templateSelection: formatState
+    });
 
-    addLineBtn.addEventListener('click', () => {
-        let newLine = lineTemplate
-            .replace('##product_id##', `lines[${lineIndex}][product_id]`)
+    let lineIndex = 1;
+
+    // Ajouter une nouvelle ligne
+    $('#add-line').on('click', function() {
+        let template = $('#order-line-template').html()
+            .replace('##design_id##', `lines[${lineIndex}][design_id]`)
             .replace('##size##', `lines[${lineIndex}][size]`)
             .replace('##quantity##', `lines[${lineIndex}][quantity]`)
             .replace('##price##', `lines[${lineIndex}][price]`);
+        $('#order-lines').append(template);
 
-        orderLinesTbody.insertAdjacentHTML('beforeend', newLine);
+        $('.select-product').select2({
+            templateResult: formatState,
+            templateSelection: formatState
+        });
+
         lineIndex++;
+        updateTotals();
     });
 
-    orderLinesTbody.addEventListener('click', (e) => {
-        if(e.target.classList.contains('remove-line')){
-            e.target.closest('tr').remove();
-        }
+    // Supprimer une ligne
+    $(document).on('click', '.remove-line', function() {
+        $(this).closest('tr').remove();
+        updateTotals();
     });
+
+    // Calcul des totaux
+    $(document).on('input change', '.quantity, .price, .select-size', function() {
+        updateTotals();
+    });
+
+    function updateTotals() {
+        let totalQuantity = 0;
+        let totalPrice = 0;
+
+        $('#order-lines tr').each(function() {
+            const size = $(this).find('.select-size').val();
+            const quantity = parseInt($(this).find('.quantity').val()) || 0;
+            const price = parseFloat($(this).find('.price').val()) || 0;
+
+            const multiplier = (size === 'ALT') ? 6 : 1;
+
+            totalQuantity += quantity * multiplier;
+            totalPrice += (quantity * price) * multiplier;
+        });
+
+        $('#total-quantity').text(totalQuantity);
+        $('#total-price').text(totalPrice.toFixed(2) + '€');
+    }
+
+    function formatState(state) {
+        if (!state.id) return state.text;
+
+        var thumbnail = $(state.element).data('thumbnail');
+        if (!thumbnail) return state.text;
+
+        return $(`<span><img src="${thumbnail}" style="width: 30px; height: 30px; margin-right: 8px; object-fit: cover;" /> ${state.text}</span>`);
+    }
 });
-
-function formatState (state) {
-  if (!state.id) {
-    return state.text;
-  }
-
-  // Récupération de la miniature depuis l'attribut data
-  var thumbnail = $(state.element).data('thumbnail');
-  if (!thumbnail) {
-    return state.text; // Si pas d'image, on affiche juste le texte
-  }
-
-  var $state = $(
-    '<span><img src="' + thumbnail + '" style="width: 30px; height: 30px; margin-right: 8px; object-fit: cover;" /> ' + state.text + '</span>'
-  );
-  return $state;
-};
 </script>
 @endsection

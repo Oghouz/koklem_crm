@@ -31,32 +31,40 @@
                         <input type="text" class="form-control" id="reference" name="reference" required>
                     </div>
                     <div class="mb-3">
+                        <label for="name" class="form-label">Nom de produit</label>
+                        <input type="text" class="form-control" id="name" name="name">
+                    </div>
+                    <div class="mb-3">
                         <label for="category_id" class="form-label">Catégorie</label>
                         <select class="form-control" name="category_id" id="category_id" required>
-                            <option value="" disabled selected>- Sélectionner une catégorie -</option>
+                            <option value="" disabled selected>- Sélectionner une catégorie</option>
                             @foreach($categories as $category)
                                 <option value="{{$category->id}}">{{$category->name}}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="name" class="form-label">Nom de produit</label>
-                        <input type="text" class="form-control" id="name" name="name">
-                    </div>
-                    <div class="mb-3">
                         <select name="size" id="size" class="form-control">
-                            <option value="" selected disabled>- Séléctionner la taille -</option>
-                            <option value="xs">XS</option>
-                            <option value="s">S</option>
-                            <option value="m">M</option>
-                            <option value="l">L</option>
-                            <option value="xl">XL</option>
-                            <option value="xxl">XXL</option>
+                            <option value="" selected disabled> - Séléctionner la taille</option>
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="description" class="form-label">Description de produit</label>
-                        <textarea class="form-control" name="description" id="description" cols="30" rows="3"></textarea>
+                        <select name="color_id" id="color_id" class="form-control">
+                            <option value="" selected disabled> - Séléctionner un couleur</option>
+                            @foreach($colors as $color)
+                                <option value="{{$color->id}}" style="background-color: {{$color->code}}">{{$color->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="stock" name="stock">
                     </div>
                     <div class="mb-3">
                         <label for="price" class="form-label">Prix de produit</label>
@@ -73,6 +81,10 @@
                     <div class="mb-3">
                         <label for="image" class="form-label">Photo</label>
                         <input class="form-control" type="file" id="image" name="image">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description de produit</label>
+                        <textarea class="form-control" name="description" id="description" cols="30" rows="3"></textarea>
                     </div>
                 </div>
             </div>

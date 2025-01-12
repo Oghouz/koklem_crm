@@ -7,7 +7,7 @@
     </div>
 @endif
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Gestion de Produit</h1>
+    <h1 class="h2">Gestion de Stock</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
     <div class="btn-group me-2">
         <a href="{{route('product.create')}}" type="button" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Nouveau</a>
@@ -23,11 +23,11 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Réference</th>
+            <th></th>
             <th>Nom</th>
-            <th class="text-center">Couleur</th>
-            <th class="text-center">Taille</th>
-            <th class="text-center">Stock</th>
+            <th>Catégorie</th>
+            <th>Taille</th>
+            <th>Stock</th>
             <th></th>
         </tr>
     </thead>
@@ -36,16 +36,23 @@
         <tr>
             <th scope="row">#{{$product->id}}</th>
             <td>
+                <a href="{{route('product.show', ['product'=>$product])}}">
+                    @if($product->image)
+                    <img src="{{asset('images/products/').'/'.$product->image}}" alt="" width="64">
+                    @else
+                    <i class="fa fa-shirt fa-2x"></i>
+                    @endif
+                </a>
+            </td>
+            <td>
                 <span class="fw-bold">{{$product->reference}}</span>
+                <p class="">{{$product->name}}</p>
             </td>
-            <td>{{$product->name}}</td>
-            <td class="text-center">
-                <span class="badge bg-secondary"><i class="fa-solid fa-shirt" style="color:{{$product->color->code}}"></i> {{$product->color->name}}</span>
+            <td>
+                <span class="badge bg-secondary">{{$product->category->name}}</span>
             </td>
-            <td class="text-center">
-                <span class="badge bg-dark">{{$product->size}}</span>
-            </td>
-            <td class="fw-bold text-center">{{$product->stock}}</td>
+            <td></td>
+            <td></td>
             <td class="text-end"><a href="{{route('product.edit', ['product' => $product])}}" class="btn btn-link"><i class="fa fa-edit"></i></a></td>
         </tr>
         @endforeach

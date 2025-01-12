@@ -42,6 +42,10 @@
                         <input type="text" class="form-control" id="reference" name="reference" value="{{$product->reference}}" required>
                     </div>
                     <div class="mb-3">
+                        <label for="name" class="form-label">Nom de produit</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{$product->name}}">
+                    </div>
+                    <div class="mb-3">
                         <label for="category_id" class="form-label">Catégorie</label>
                         <select class="form-control" name="category_id" id="category_id" required>
                             <option value="" disabled selected>- Sélectionner une catégorie -</option>
@@ -51,24 +55,27 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="name" class="form-label">Nom de produit</label>
-                        <input type="text" class="form-control" id="name" name="name" value="{{$product->name}}">
-                    </div>
-                    <div class="mb-3">
                         <label for="size" class="form-label">Taille</label>
                         <select name="size" id="size" class="form-control">
                             <option value="" selected disabled>- Séléctionner la taille -</option>
-                            <option value="xs" @if($product->size =='xs') selected @endif>XS</option>
-                            <option value="s" @if($product->size =='s') selected @endif>S</option>
-                            <option value="m" @if($product->size =='m') selected @endif>M</option>
-                            <option value="l" @if($product->size =='l') selected @endif>L</option>
-                            <option value="xl" @if($product->size =='xl') selected @endif>XL</option>
-                            <option value="xxl" @if($product->size =='xxl') selected @endif>XXL</option>
+                            <option value="XS" @if($product->size =='XS') selected @endif>XS</option>
+                            <option value="S" @if($product->size =='S') selected @endif>S</option>
+                            <option value="M" @if($product->size =='M') selected @endif>M</option>
+                            <option value="L" @if($product->size =='L') selected @endif>L</option>
+                            <option value="XL" @if($product->size =='XL') selected @endif>XL</option>
+                            <option value="XXL" @if($product->size =='XXL') selected @endif>XXL</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="description" class="form-label">Description de produit</label>
-                        <textarea class="form-control" name="description" id="description" cols="30" rows="3">{{$product->description}}</textarea>
+                        <label for="color_id" class="form-label">Couleur</label>
+                        <select name="color_id" id="color_id" class="form-control">
+                            <option value="" selected disabled> - Séléctionner un couleur</option>
+                            @foreach($colors as $color)
+                                <option value="{{$color->id}}" @if($color->id == $product->color_id) selected @endif style="background-color: {{$color->code}}">
+                                    {{$color->name}}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="price" class="form-label">Prix de produit</label>
@@ -90,6 +97,10 @@
                         <label for="image" class="form-label">Photo</label>
                         <input class="form-control" type="file" id="image" name="image">
                         <p>{{$product->image}}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description de produit</label>
+                        <textarea class="form-control" name="description" id="description" cols="30" rows="3">{{$product->description}}</textarea>
                     </div>
                 </div>
             </div>
