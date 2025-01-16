@@ -32,9 +32,25 @@ Route::middleware('auth')->group(function () {
     Route::resource('product', ProductController::class);
     Route::resource('design', DesignController::class);
     Route::resource('client', ClientController::class);
-    Route::resource('order', OrderController::class);
+
+
     Route::resource('stock', StockController::class);
     Route::resource('invoice', InvoiceController::class);
+
+    /**
+     * Order
+     */
+    Route::resource('order', OrderController::class);
+    Route::get('/order/{id}/generate-pdf/{type}', [OrderController::class, 'generatePDF'])->name('order.generatePDF');
+
+    /**
+     * OrderLine
+     */
+    Route::prefix('orderLine')->group(function () {
+        Route::post('add', [OrderController::class, 'addOrderLine'])->name('orderLine.add');
+        Route::delete('delete/{order_line_id}', [OrderController::class, 'deleteOrderLine'])->name('orderLine.delete');
+    });
+
 
 });
 

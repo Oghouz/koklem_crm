@@ -25,5 +25,10 @@ class OrderLine extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+
+    public function design()
+    {
+        return $this->belongsTo(Design::class, 'design_id');
+    }
 }
 

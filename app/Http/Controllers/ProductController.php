@@ -62,7 +62,7 @@ class ProductController extends Controller
 
         // Créer et enregistrer le produit
         $product = new Product();
-        $product->fill($request->only(['reference', 'category_id', 'name', 'size', 'description', 'price','stock','tva_id']));
+        $product->fill($request->only(['reference', 'category_id', 'color_id', 'name', 'size', 'description', 'price','stock','tva_id']));
         $product->created_by = $user->id;
         $product->updated_by = $user->id;
         $product->save();
