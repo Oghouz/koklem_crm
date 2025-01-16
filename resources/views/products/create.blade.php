@@ -52,6 +52,12 @@
                             <option value="L">L</option>
                             <option value="XL">XL</option>
                             <option value="XXL">XXL</option>
+                            <option value="2Y">KID 2Y</option>
+                            <option value="4Y">KID 4Y</option>
+                            <option value="6Y">KID 6Y</option>
+                            <option value="8Y">KID 8Y</option>
+                            <option value="10Y">KID 10Y</option>
+                            <option value="12Y">KID 12Y</option>
                         </select>
                     </div>
                     <div class="mb-3">

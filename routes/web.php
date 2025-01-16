@@ -33,6 +33,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('design', DesignController::class);
     Route::resource('client', ClientController::class);
     Route::resource('order', OrderController::class);
+    Route::get('/order/{id}/generate-pdf/{type}', [OrderController::class, 'generatePDF'])->name('order.generatePDF');
+
     Route::resource('stock', StockController::class);
     Route::resource('invoice', InvoiceController::class);
 

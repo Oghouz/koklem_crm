@@ -9,6 +9,8 @@ use App\Models\OrderLine;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class OrderController extends Controller
 {
@@ -93,7 +95,7 @@ class OrderController extends Controller
                         'reference' => $design->reference,
                         'name' => $design->name,
                         'size' => $size,
-                        'color' => $product->color->name,
+                        'color' => $product->color ? $product->color->name : '',
                         'quantity' => $lineData['quantity'],
                         'price' => $lineData['price'],
                         'comment' => null,
@@ -111,7 +113,7 @@ class OrderController extends Controller
                     'reference' => $design->reference,
                     'name' => $design->name,
                     'size' => $lineData['size'],
-                    'color' => $product->color->name,
+                    'color' => $product->color ? $product->color->name : '',
                     'quantity' => $lineData['quantity'],
                     'price' => $lineData['price'],
                     'comment' => null,
@@ -138,7 +140,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        //
+        return view('orders.show', compact('order'));
     }
 
     /**
@@ -148,8 +150,9 @@ class OrderController extends Controller
     {
         $clients = Client::all();
         $products = Product::all();
+        $designs = Design::all();
 
-        return view('orders.edit', compact('order', 'clients', 'products'));
+        return view('orders.edit', compact('order', 'clients', 'products', 'designs'));
     }
 
     /**
@@ -160,8 +163,12 @@ class OrderController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
+            'status' => 'required|numeric|in:1,2,3,8,9',
             'client_id' => 'nullable|exists:clients,id',
             'comment' => 'nullable|string',
+            'payment_method' => 'nullable|string',
+            'payment_date' => 'nullable|date',
+            'delivery_date' => 'nullable|date',
             'lines' => 'required|array|min:1',
             'lines.*.product_id' => 'required|exists:products,id',
             'lines.*.quantity' => 'required|numeric|min:1',
@@ -169,12 +176,20 @@ class OrderController extends Controller
         ]);
 
         // Mise à jour des informations de la commande
-        $order->update([
+        $orderData = [
+            'status' => $validated['client_id'] ?? null,
             'client_id' => $validated['client_id'] ?? null,
-            'comment' => $validated['comment'] ?? '',
+            'comment' => $validated['comment'] ?? null,
+            'payment_method' => $validated['payment_method'] ?? null,
+            'payment_date' => $validated['payment_date'] ?? null,
+            'delivery_date' => $validated['delivery_date'] ?? null,
             'updated_by' => $user->id,
-            // total et total_lines seront recalculés plus bas
-        ]);
+        ];
+        if($validated['payment_date']) {
+            $orderData['paid'] = true;
+        }
+
+        $order->update($orderData);
 
         // On supprime les lignes existantes avant de les recréer
         $order->orderLines()->delete();
@@ -192,7 +207,6 @@ class OrderController extends Controller
                 'line_total' => $lineTotal,
                 'comment' => null,
                 'updated_by' => $user->id,
-                'created_by' => $user->id,
             ]);
         }
 
@@ -210,6 +224,35 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         //
+    }
+
+    public function generatePDF($id, $type)
+    {
+        // Récupérer la commande
+        $order = Order::with('orderLines.design', 'client')->findOrFail($id);
+
+        // Déterminer le type de document
+        $view = $type === 'bl' ? 'pdfs.bon_livraison' : 'pdfs.facture';
+
+        // Charger la vue correspondante pour le PDF
+        $html = view($view, compact('order'))->render();
+
+        // Options pour Dompdf
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Nom du fichier
+        $fileName = $type === 'bl' ? 'Bon_de_Livraison_' : 'Facture_';
+        $fileName .= $order->num . '.pdf';
+
+        // Téléchargement du fichier PDF
+        return $dompdf->stream($fileName, ['Attachment' => false]);
     }
 
 }

@@ -64,6 +64,12 @@
                             <option value="L" @if($product->size =='L') selected @endif>L</option>
                             <option value="XL" @if($product->size =='XL') selected @endif>XL</option>
                             <option value="XXL" @if($product->size =='XXL') selected @endif>XXL</option>
+                            <option value="2Y" @if($product->size =='2Y') selected @endif>KID 2Y</option>
+                            <option value="4Y" @if($product->size =='4Y') selected @endif>KID 4Y</option>
+                            <option value="6Y" @if($product->size =='6Y') selected @endif>KID 6Y</option>
+                            <option value="8Y" @if($product->size =='8Y') selected @endif>KID 8Y</option>
+                            <option value="10Y" @if($product->size =='10Y') selected @endif>KID 10Y</option>
+                            <option value="12Y" @if($product->size =='12Y') selected @endif>KID 12Y</option>
                         </select>
                     </div>
                     <div class="mb-3">

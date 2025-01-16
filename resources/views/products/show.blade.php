@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-md-4">
             @if($product->image)
-                <img src="{{asset('images/products/').'/'.$product->image}}">
+                <img class="img-fluid" src="{{asset('images/products/').'/'.$product->image}}">
             @endif
         </div>
         <div class="col-md-8">
@@ -22,9 +22,9 @@
             <p class="fs-5">{{$product->name}}</p>
             <p>{{$product->description}}</p>
             <hr>
-            <p class="mb-0">Prix de vente : {{number_format($product->price, 2, ',', ' ')}}€</p>
+            <p class="mb-0">Prix d'achat : {{number_format($product->price, 2, ',', ' ')}}€</p>
             <p class="mb-0">TVA: {{$product->tva->value}}%</p>
-            <p>STOCK : <span class="badge bg-dark">{{$product->stock}}0</span></p>
+            <p>STOCK : <span class="badge bg-dark">{{$product->stock}}</span></p>
             <p class="mb-0">Créer par {{$product->creator->name}}, le {{$product->created_at}}</p>
             <p>Dernière modification par {{$product->updater->name}}, le {{$product->updated_at}}</p>
         </div>

@@ -69,7 +69,11 @@ class DesignController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $design = Design::findOrFail($id);
+
+        return view('designs.show', [
+            'design' => $design,
+        ]);
     }
 
     /**

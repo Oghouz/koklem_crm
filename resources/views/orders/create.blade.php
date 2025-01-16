@@ -65,13 +65,12 @@
             </tr>
             </thead>
             <tbody id="order-lines">
-                {{-- Première ligne par défaut --}}
                 <tr>
                     <td>
                         <select name="lines[0][design_id]" class="form-select select-product">
                             <option value="">- Sélectionner un produit -</option>
                             @foreach($designs as $design)
-                                <option value="{{ $design->id }}" data-thumbnail="{{ asset('images/designs/'.$design->image) }}">
+                                <option value="{{ $design->id }}" data-thumbnail="{{ asset('images/designs/' . $design->image) }}">
                                     {{ $design->name }}
                                 </option>
                             @endforeach
@@ -79,6 +78,7 @@
                     </td>
                     <td>
                         <select name="lines[0][size]" class="form-control select-size">
+                            <option value="">- Séléctionner la taille</option>
                             <option value="ALT">À la taille</option>
                             <option value="XS">XS</option>
                             <option value="S">S</option>
@@ -86,6 +86,12 @@
                             <option value="L">L</option>
                             <option value="XL">XL</option>
                             <option value="XXL">XXL</option>
+                            <option value="2Y">KID 2Y</option>
+                            <option value="4Y">KID 4Y</option>
+                            <option value="6Y">KID 6Y</option>
+                            <option value="8Y">KID 8Y</option>
+                            <option value="10Y">KID 10Y</option>
+                            <option value="12Y">KID 12Y</option>
                         </select>
                     </td>
                     <td>
@@ -119,7 +125,7 @@
             <select name="##design_id##" class="form-select select-product">
                 <option value="">-- Sélectionnez un produit --</option>
                 @foreach($designs as $design)
-                    <option value="{{ $design->id }}" data-thumbnail="{{ asset('images/designs/'.$design->image) }}">
+                    <option value="{{ $design->id }}" data-thumbnail="{{ asset('images/designs/' . $design->image) }}">
                         {{ $design->name }}
                     </option>
                 @endforeach
@@ -127,6 +133,7 @@
         </td>
         <td>
             <select name="##size##" class="form-control select-size">
+                <option value="">- Séléctionner la taille</option>
                 <option value="ALT">À la taille</option>
                 <option value="XS">XS</option>
                 <option value="S">S</option>
@@ -134,6 +141,12 @@
                 <option value="L">L</option>
                 <option value="XL">XL</option>
                 <option value="XXL">XXL</option>
+                <option value="2Y">KID 2Y</option>
+                <option value="4Y">KID 4Y</option>
+                <option value="6Y">KID 6Y</option>
+                <option value="8Y">KID 8Y</option>
+                <option value="10Y">KID 10Y</option>
+                <option value="12Y">KID 12Y</option>
             </select>
         </td>
         <td>

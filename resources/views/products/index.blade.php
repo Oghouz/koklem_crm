@@ -1,55 +1,148 @@
 @extends('layouts.app')
 
 @section('content')
-@if (session('status'))
-    <div class="alert alert-success" role="alert">
-        {{ session('status') }}
+<div class="mb-9">
+    <div class="row g-3 mb-4">
+    <div class="col-auto">
+        <h2 class="mb-0">Produits</h2>
     </div>
-@endif
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Gestion de Produit</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-    <div class="btn-group me-2">
-        <a href="{{route('product.create')}}" type="button" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Nouveau</a>
-        <button type="button" class="btn btn-sm btn-info">Export</button>
     </div>
-    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-        This week
-    </button>
+    <ul class="nav nav-links mb-3 mb-lg-2 mx-n3">
+    <li class="nav-item"><a class="nav-link active" aria-current="page" href="#"><span>All </span><span class="text-body-tertiary fw-semibold">(68817)</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="#"><span>Published </span><span class="text-body-tertiary fw-semibold">(70348)</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="#"><span>Drafts </span><span class="text-body-tertiary fw-semibold">(17)</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="#"><span>On discount </span><span class="text-body-tertiary fw-semibold">(810)</span></a></li>
+    </ul>
+    <div id="products" data-list='{"valueNames":["product","price","category","tags","vendor","time"],"page":10,"pagination":true}'>
+    <div class="mb-4">
+        <div class="d-flex flex-wrap gap-3">
+        <div class="search-box">
+            <form class="position-relative">
+                <input class="form-control search-input search" type="search" placeholder="Recherche..." aria-label="Search" />
+                <span class="fas fa-search search-box-icon"></span>
+            </form>
+        </div>
+        <div class="scrollbar overflow-hidden-y">
+            <div class="btn-group position-static" role="group">
+            <div class="btn-group position-static text-nowrap">
+                <button class="btn btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
+                Category<span class="fas fa-angle-down ms-2"></span></button>
+                <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                <li>
+                    <hr class="dropdown-divider" />
+                </li>
+                <li><a class="dropdown-item" href="#">Separated link</a></li>
+                </ul>
+            </div>
+            <div class="btn-group position-static text-nowrap">
+                <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
+                Vendor<span class="fas fa-angle-down ms-2"></span></button>
+                <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                <li>
+                    <hr class="dropdown-divider" />
+                </li>
+                <li><a class="dropdown-item" href="#">Separated link</a></li>
+                </ul>
+            </div>
+            <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0">More filters</button>
+            </div>
+        </div>
+        <div class="ms-xxl-auto">
+            <button class="btn btn-link text-body me-4 px-0"><span class="fa-solid fa-file-export fs-9 me-2"></span>Export</button>
+            <a href="{{route('product.create')}}" class="btn btn-primary" id="addBtn"><span class="fas fa-plus me-2"></span>Nouveau Produit</a>
+        </div>
+        </div>
+    </div>
+    <div class="mx-n4 px-4 mx-lg-n6 px-lg-6 bg-body-emphasis border-top border-bottom border-translucent position-relative top-1">
+        <div class="table-responsive scrollbar mx-n1 px-1">
+        <table class="table fs-9 mb-0">
+            <thead>
+            <tr>
+                <th class="white-space-nowrap fs-9 align-middle ps-0" style="max-width:20px; width:18px;">
+                <div class="form-check mb-0 fs-8">
+                    <input class="form-check-input" id="checkbox-bulk-products-select" type="checkbox" data-bulk-select='{"body":"products-table-body"}' />
+                </div>
+                </th>
+                <th class="sort white-space-nowrap align-middle fs-10" scope="col" style="width:70px;"></th>
+                <th class="sort white-space-nowrap align-middle" scope="col" style="width:70px;">REF</th>
+                <th class="sort white-space-nowrap align-middle ps-4" scope="col" style="width:350px;">PRODUCT NAME</th>
+                <th class="sort align-middle ps-4" scope="col"  style="width:150px;">TAILLE</th>
+                <th class="sort align-middle ps-3" scope="col" style="width:250px;">COULEUR</th>
+                <th class="sort align-middle text-center ps-4" scope="col" style="width:125px;">STOCK</th>
+                <th class="sort align-middle ps-4" scope="col" style="width:50px;">CREER LE</th>
+                <th class="sort text-end align-middle pe-0 ps-4" scope="col"></th>
+            </tr>
+            </thead>
+            <tbody class="list" id="products-table-body">
+                @foreach ($products as $product)
+                <tr class="position-static">
+                    <td class="fs-9 align-middle">
+                        <div class="form-check mb-0 fs-8">
+                            <input class="form-check-input" type="checkbox" data-bulk-select-row='{"product":"Fitbit Sense Advanced Smartwatch with Tools for Heart Health, Stress Management & Skin Temperature Trends, Carbon/Graphite, One Size (S & L Bands...","productImage":"/products/1.png","price":"$39","category":"Plants","tags":["Health","Exercise","Discipline","Lifestyle","Fitness"],"star":false,"vendor":"Blue Olive Plant sellers. Inc","publishedOn":"Nov 12, 10:45 PM"}' />
+                        </div>
+                    </td>
+                    <td class="align-middle white-space-nowrap py-0">
+                        <a class="d-block border border-translucent rounded-2" href="{{route('product.show', $product)}}">
+                            <img src="{{asset('images/products').'/'.$product->image}}" alt="" width="53" />
+                        </a>
+                    </td>
+                    <td class="align-middle white-space-nowrap py-0">
+                        <span class="fw-bold">{{$product->reference}}</span>
+                    </td>
+                    <td class="product align-middle ps-4">
+                        <a class="fw-semibold line-clamp-3 mb-0" href="{{route('product.show', $product)}}">
+                            <span>{{ $product->name }}</span>
+                        </a>
+                    </td>
+                    <td class="category align-middle white-space-nowrap text-body-quaternary fs-9 ps-4 fw-semibold">
+                        <span class="badge text-bg-secondary">{{$product->size}}</span>
+                    </td>
+                    <td class="tags align-middle review pb-2 ps-3" style="min-width:225px;">
+                        @if($product->color)
+                        <i class="fas fa-border fa-tshirt" style="color:{{$product->color->code}}"></i>
+                        {{$product->color->name}}
+                        @endif
+                    </td>
+                    <td class="align-middle review fs-8 text-center ps-4">
+                        <span class="badge badge-phoenix badge-phoenix-secondary">{{$product->stock}}</span>
+                    </td>
+                    <td class="time align-middle white-space-nowrap text-body-tertiary text-opacity-85 ps-4">
+                        {{$product->created_at}}
+                    </td>
+                    <td class="align-middle white-space-nowrap text-end pe-0 ps-4 btn-reveal-trigger">
+                    <div class="btn-reveal-trigger position-static">
+                        <button class="btn btn-sm dropdown-toggle dropdown-caret-none transition-none btn-reveal fs-10" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent"><span class="fas fa-ellipsis-h fs-10"></span></button>
+                        <div class="dropdown-menu dropdown-menu-end py-2">
+                            <a class="dropdown-item" href="#!">Voir</a>
+                            <a class="dropdown-item" href="#!">Modifier</a>
+                        <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="#!">Supprimer</a>
+                        </div>
+                    </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+        </div>
+        <div class="row align-items-center justify-content-between py-2 pe-0 fs-9">
+        <div class="col-auto d-flex">
+            <p class="mb-0 d-none d-sm-block me-3 fw-semibold text-body" data-list-info="data-list-info"></p><a class="fw-semibold" href="#!" data-list-view="*">View all<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a><a class="fw-semibold d-none" href="#!" data-list-view="less">View Less<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
+        </div>
+        <div class="col-auto d-flex">
+            <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+            <ul class="mb-0 pagination"></ul>
+            <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+        </div>
+        </div>
+    </div>
     </div>
 </div>
-<table class="table table-striped table-hover">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Réference</th>
-            <th>Nom</th>
-            <th class="text-center">Couleur</th>
-            <th class="text-center">Taille</th>
-            <th class="text-center">Stock</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($products as $product)
-        <tr>
-            <th scope="row">#{{$product->id}}</th>
-            <td>
-                <span class="fw-bold">{{$product->reference}}</span>
-            </td>
-            <td>{{$product->name}}</td>
-            <td class="text-center">
-                <span class="badge bg-secondary"><i class="fa-solid fa-shirt" style="color:{{$product->color->code}}"></i> {{$product->color->name}}</span>
-            </td>
-            <td class="text-center">
-                <span class="badge bg-dark">{{$product->size}}</span>
-            </td>
-            <td class="fw-bold text-center">{{$product->stock}}</td>
-            <td class="text-end"><a href="{{route('product.edit', ['product' => $product])}}" class="btn btn-link"><i class="fa fa-edit"></i></a></td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
 
 @endsection
