@@ -94,9 +94,9 @@
                         </thead>
                         <tbody>
                             @foreach($order->orderLines as $line)
-                            <tr>
+                            <tr class="fs-9">
                                 <td>
-                                    <img class="img-fluid order-image" src="{{ asset('images/designs/' . $line->design->image) }}" width="64" data-image="{{ asset('images/designs/' . $line->design->image) }}" style="cursor: pointer;">
+                                    <img class="img-fluid order-image" src="{{ asset('images/designs/' . $line->design->image) }}" width="32" data-image="{{ asset('images/designs/' . $line->design->image) }}" style="cursor: pointer;">
                                 </td>
                                 <td>
                                     {{$line->design->name}}<br>

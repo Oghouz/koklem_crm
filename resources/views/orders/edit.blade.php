@@ -94,63 +94,104 @@
                 </div>
             </div>
         </div>
-        <hr>
+                
+        <div class="card mt-3">
+            <div class="card-header p-4 border-bottom bg-body">
+                <h6>Lignes de commande</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Réference</th>
+                            <th>Produit</th>
+                            <th class="text-center">Taille</th>
+                            <th class="text-center">Quantité</th>
+                            <th class="text-end">Prix</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody id="order-lines">
+                            @foreach($order->orderLines as $index => $line)
+                                <tr class="fs-9" id="line-{{$index}}" data-id="{{$line->id}}">
+                                    <td><img class="img-fluid order-image" src="{{asset('images/designs') . '/' . $line->design->image}}" width="32"  data-image="{{ asset('images/designs/' . $line->design->image) }}" style="cursor: pointer;"></td>
+                                    <td class="fw-bold">{{$line->reference}}</td>
+                                    <td data-field="product">{{$line->design->name}}</td>
+                                    <td class="text-center" data-field="size">
+                                        <span class="badge text-bg-secondary">{{$line->size}}</span>
+                                    </td>
+                                    <td class="text-center" data-field="quantity">
+                                        <span class="fw-bold">{{$line->quantity}}</span>
+                                    </td>
+                                    <td class="text-end" data-field="price">
+                                        <span>{{ number_format($line->price, 2, ",", ' ') }}€</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span>{{ number_format(($line->price * $line->quantity), 2, ',', ' ') }}€</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="dropdown d-inline-block">
+                                            <button class="btn btn-phoenix-secondary btn-sm dropdown-toggle" id="dropdownMenuButton" type="button"
+                                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button><span
+                                                class="caret"> </span>
+                                            <div class="dropdown-menu dropdown-menu-end py-0" aria-labelledby="dropdownMenuButton">
+                                                <a class="dropdown-item" href="{{route('design.show', $line->product)}}" target="_blank">
+                                                    <i class="fa fa-eye"></i> Détail
+                                                </a>
+                                                <button type="button" class="dropdown-item btn-sm"><i class="fa fa-edit"></i> Modifier</button>
+                                                <div class="dropdown-divider"></div>
+                                                <button type="button" class="btn-sm text-danger dropdown-item"><i class="fa fa-trash"></i> Supprimer</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
 
-        <h2>Lignes de commande</h2>
-        <table class="table">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Réference</th>
-                <th>Produit</th>
-                <th class="text-center">Taille</th>
-                <th class="text-center">Quantité</th>
-                <th class="text-right">Prix</th>
-                <th class="text-right">Total</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody id="order-lines">
-                @foreach($order->orderLines as $index => $line)
-                    <tr>
-                        <td><img src="{{asset('images/designs').'/'.$line->design->image}}" width="32"></td>
-                        <td>{{$line->reference}}</td>
-                        <td>{{$line->design->name}}</td>
-                        <td class="text-center">
-                            <span class="badge text-bg-secondary">{{$line->size}}</span>
-                        </td>
-                        <td class="text-center">
-                            <span class="fw-bold">{{$line->quantity}}</span>
-                        </td>
-                        <td>
-                            <span>{{ number_format($line->price, 2, ",", ' ') }}€</span>
-                        </td>
-                        <td>
-                            <span>{{ $line->price*$line->quantity }}</span>
-                        </td>
-                        <td><button type="button" class="btn btn-danger btn-sm remove-line">X</button></td>
-                    </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="4" class="text-end">TOTAL HT: <span class="fw-bold">{{number_format($order->total_ht, 2, ',', ' ')}}€</span></td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="text-end">TOTAL TVA : <span class="fw-bold">{{number_format($order->total_tva, 2, ',', ' ')}}€</span></td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="text-end">TOTAL TTC : <span class="fw-bold">{{number_format($order->total_ttc, 2, ',', ' ')}}€</span></td>
-                </tr>
-            </tfoot>
-        </table>
-        <button type="button" id="add-line" class="btn btn-secondary">Ajouter une ligne</button>
-        <button type="submit" class="btn btn-primary">Mettre à jour la commande</button>
+                    <table class="table table-borderless">
+                            <tr>
+                                <td class="text-end">TOTAL HT: <span
+                                        class="fw-bold">{{number_format($order->total_ht, 2, ',', ' ')}}€</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-end">TOTAL TVA : <span
+                                        class="fw-bold">{{number_format($order->total_tva, 2, ',', ' ')}}€</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-end">TOTAL TTC : <span
+                                        class="fw-bold">{{number_format($order->total_ttc, 2, ',', ' ')}}€</span></td>
+                            </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 mb-3">
+            <button type="button" id="add-line" class="btn btn-secondary"><i class="fa fa-plus"></i> Ajouter une ligne</button>
+            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Mettre à jour la commande</button>
+        </div>
+        
     </form>
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="Image" class="img-fluid">
+            </div>
+        </div>
+    </div>
 </div>
 
 <template id="order-line-template">
     <tr>
+        <td></td>
+        <td></td>
         <td>
             <select name="##design_id##" class="form-select select-product">
                 <option value="">-- Sélectionnez un produit --</option>
@@ -185,8 +226,10 @@
         <td>
             <input type="number" step="0.01" min="0" name="##price##" class="form-control price" />
         </td>
-        <td>
-            <button type="button" class="btn btn-danger btn-sm remove-line">X</button>
+        <td></td>
+        <td class="text-end">
+            <button type="button" class="btn btn-sm btn-success">Valider</button>
+            <button type="button" class="btn btn-sm btn-danger remove-line">X</button>
         </td>
     </tr>
 </template>
@@ -194,6 +237,17 @@
 
 @section('script')
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Handle image click to open modal
+        document.querySelectorAll('.order-image').forEach(image => {
+            image.addEventListener('click', function () {
+                const modalImage = document.getElementById('modalImage');
+                modalImage.src = this.getAttribute('data-image');
+                const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                modal.show();
+            });
+        });
+    });
     $(document).ready(function () {
         $('.select-product').select2({
             templateResult: formatState,
