@@ -15,7 +15,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('design_id');
+            $table->string('reference');
+            $table->string('name');
+            $table->string('description')->nullable();
             $table->string('size')->nullable();
+            $table->string('color')->nullable();
             $table->integer('quantity');
             $table->decimal('price', 10,2);
             $table->text('comment')->nullable();
@@ -25,12 +30,13 @@ return new class extends Migration
 
             // Index
             $table->index(['order_id']);
-            $table->index(['product_id']);
+            $table->index(['product_id', 'design_id']);
             $table->index(['created_by', 'updated_by']);
 
             // Clés étrangères
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('restrict');
+            $table->foreign('design_id')->references('id')->on('designs')->onDelete('restrict');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
         });

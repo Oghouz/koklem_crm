@@ -42,10 +42,8 @@
                     </select>
                 </div>
                 <div class="col-sm-6">
-                    <label for="payment_status">Paiement</label>
-                    <select name="payment_status" id="payment_status" class="form-control">
-                        
-                    </select>
+                    <label for="payment_date">Payer</label>
+                    <input type="date" name="payment_date" id="âyment_date" class="form-control">
                 </div>
             </div>
             
@@ -135,6 +133,20 @@
                     @endforeach
                 @endif
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end">TOTAL H.T</td>
+                    <td>{{number_format($order->total_ht, 2, ',', ' ')}}€</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="text-end">TOTAL TVA</td>
+                    <td>{{number_format($order->total_tva, 2, ',', ' ')}}€</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="text-end">TOTAL TTC</td>
+                    <td>{{number_format($order->total_ttc, 2, ',', ' ')}}€</td>
+                </tr>
+            </tfoot>
         </table>
 
         <button type="button" id="add-line" class="btn btn-secondary">Ajouter une ligne</button>

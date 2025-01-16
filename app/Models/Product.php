@@ -19,6 +19,7 @@ class Product extends Model
         'description',
         'price',
         'tva_id',
+        'color_id',
         'stock',
         'created_by',
         'updated_by',
@@ -32,6 +33,11 @@ class Product extends Model
     public function tva()
     {
         return $this->belongsTo(TVA::class, 'tva_id');
+    }
+
+    public function color()
+    {
+        return $this->belongsTo(Color::class, 'color_id');
     }
 
     public function orderLines()

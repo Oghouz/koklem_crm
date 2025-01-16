@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Design;
 use App\Models\Order;
 use App\Models\OrderLine;
 use App\Models\Product;
@@ -28,8 +29,25 @@ class OrderController extends Controller
     {
         $clients = Client::all();
         $products = Product::all();
+        $designs = Design::all();
 
-        return view('orders.create', compact('clients', 'products'));
+        $lines = [];
+
+        foreach ($designs as $design) {
+            
+            foreach($products as $product) {
+                $lines[] = [
+                    'design_id' => $design->id,
+                    'ref' => $design->reference,
+                    'name' => $design->name,
+                    'product_id' => $product->id,
+                    'size' => $product->size,
+                    'color' => $product->color,
+                ];
+            }
+        }     
+
+        return view('orders.create', compact('clients', 'products', 'designs', 'lines'));
     }
 
     /**
@@ -41,18 +59,16 @@ class OrderController extends Controller
         $validated = $request->validate([
             'client_id' => 'nullable|exists:clients,id',
             'lines' => 'required|array|min:1',
-            'lines.*.product_id' => 'required|exists:products,id',
-            'lines.*.quantity' => 'required|numeric|min:1',
-            'lines.*.price' => 'required|numeric|min:0',
+            // 'lines.*.product_id' => 'required|exists:products,id',
+            // 'lines.*.quantity' => 'required|numeric|min:1',
+            // 'lines.*.price' => 'required|numeric|min:0',
         ]);
 
         // Créer la commande
         $order = Order::create([
             'num' => 'CMD' . time(),  // Générer un numéro de commande unique
             'status' => 1,
-            'payment_status' => 1,
             'client_id' => $validated['client_id'] ?? null,
-            'total' => 0,    // sera recalculé plus bas
             'total_lines' => count($validated['lines']),
             'comment' => $request->input('comment', ''),
             'created_by' => $user->id,
@@ -60,24 +76,59 @@ class OrderController extends Controller
         ]);
 
         $total = 0;
+        $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
         foreach ($validated['lines'] as $lineData) {
             $lineTotal = $lineData['quantity'] * $lineData['price'];
-            $total += $lineTotal;
 
-            OrderLine::create([
-                'order_id' => $order->id,
-                'product_id' => $lineData['product_id'],
-                'quantity' => $lineData['quantity'],
-                'price' => $lineData['price'],
-                'line_total' => $lineTotal,
-                'comment' => null,
-                'created_by' => $user->id,
-                'updated_by' => $user->id,
-            ]);
+            $design = Design::find($lineData['design_id']);
+
+            if($lineData['size'] == 'ALT') {
+                $lineTotal = $lineTotal * 6;
+                foreach($sizes as $size) {
+                    $product = Product::where('size', $size)->where('color_id', $design->color_id)->first();
+                    OrderLine::create([
+                        'order_id' => $order->id,
+                        'product_id' => $product->id,
+                        'design_id' => $design->id,
+                        'reference' => $design->reference,
+                        'name' => $design->name,
+                        'size' => $size,
+                        'color' => $product->color->name,
+                        'quantity' => $lineData['quantity'],
+                        'price' => $lineData['price'],
+                        'comment' => null,
+                        'created_by' => $user->id,
+                        'updated_by' => $user->id
+                    ]);
+                }
+                
+            } else {
+                $product = Product::where('size', $lineData['size'])->where('color_id', $design->color_id)->first();
+                OrderLine::create([
+                    'order_id' => $order->id,
+                    'product_id' => $product->id,
+                    'design_id' => $design->id,
+                    'reference' => $design->reference,
+                    'name' => $design->name,
+                    'size' => $lineData['size'],
+                    'color' => $product->color->name,
+                    'quantity' => $lineData['quantity'],
+                    'price' => $lineData['price'],
+                    'comment' => null,
+                    'created_by' => $user->id,
+                    'updated_by' => $user->id
+                ]);
+            }
+            
+            $total += $lineTotal;
         }
 
         // Mettre à jour le total de la commande
-        $order->update(['total' => $total]);
+        $order->update([
+            'total_ht' => $total,
+            'total_tva' => $total * 0.2,
+            'total_ttc' => $total * 1.2,
+        ]);
 
         return redirect()->route('order.show', $order->id)->with('success', 'Commande créée avec succès !');
     }
@@ -150,7 +201,7 @@ class OrderController extends Controller
             'total_lines' => count($validated['lines']),
         ]);
 
-        return redirect()->route('orders.show', $order->id)->with('success', 'Commande mise à jour avec succès !');
+        return redirect()->route('order.edit', $order->id)->with('success', 'Commande mise à jour avec succès !');
     }
 
     /**
@@ -160,4 +211,5 @@ class OrderController extends Controller
     {
         //
     }
+
 }

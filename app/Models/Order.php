@@ -7,7 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
-        'num','status','payment_status','client_id','payment_method','shipping_method','total','total_lines','comment','created_by','updated_by'
+        'num',
+        'status',
+        'client_id',
+        'paid',
+        'payment_method',
+        'shipping_method',
+        'delivery_date',
+        'payment_date',
+        'total_ht',
+        'total_tva',
+        'total_ttc',
+        'total_lines',
+        'comment',
+        'created_by',
+        'updated_by'
     ];
 
     const ORDER_STATUS_PENDING = 1;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Color;
 use App\Models\Product;
 use App\Models\TVA;
 use Illuminate\Http\Request;
@@ -29,10 +30,12 @@ class ProductController extends Controller
     {
         $tvas = TVA::all();
         $categories = Category::all();
+        $colors = Color::all();
 
         return view('products.create', [
             'tvas' => $tvas,
             'categories' => $categories,
+            'colors' => $colors,
         ]);
     }
 
@@ -45,12 +48,13 @@ class ProductController extends Controller
         $validatedData = $request->validate([
             'reference' => 'required|string|max:255|unique:products,reference',
             'category_id' => 'required|exists:categories,id',
+            'color_id' => 'nullable|exists:colors,id',
+            'tva_id' => 'required|exists:tvas,id',
             'name' => 'required|string|max:255',
             'size' => 'nullable|string|max:10',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'nullable|numeric|min:0',
-            'tva_id' => 'required|exists:tvas,id'
+            'price' => 'nullable|numeric|min:0',
+            'stock' => 'nullable|numeric|min:0'
         ]);
 
         // Récupérer l'utilisateur authentifié
@@ -82,11 +86,13 @@ class ProductController extends Controller
     {
         $tvas = TVA::all();
         $categories = Category::all();
+        $colors = Color::all();
 
         return view('products.edit', [
             'product' => $product,
             'tvas' => $tvas,
             'categories' => $categories,
+            'colors' => $colors,
         ]);
     }
 
@@ -106,11 +112,12 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'nullable|numeric|min:0',
-            'tva_id' => 'required|exists:tvas,id'
+            'tva_id' => 'required|exists:tvas,id',
+            'color_id' => 'nullable|exists:colors,id'
         ]);
 
         // Mettre à jour les champs remplissables du modèle
-        $product->fill($request->only(['reference', 'category_id', 'name', 'size', 'description', 'price', 'stock', 'tva_id']));
+        $product->fill($request->only(['reference', 'category_id', 'name', 'size', 'description', 'price', 'stock', 'tva_id', 'color_id']));
         $product->updated_by = $user->id;
         $product->save();
 
