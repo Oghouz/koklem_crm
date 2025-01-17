@@ -47,7 +47,7 @@
     </div>
    
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="card">
                 <div class="card-body">
                     <div class="mb-3">
@@ -55,12 +55,18 @@
                         <input type="text" class="form-control" id="company" name="company">
                     </div>
                     <div class="mb-3">
-                        <label for="first_name" class="form-label">Nom</label>
-                        <input type="text" class="form-control" id="first_name" name="first_name">
-                    </div>
-                    <div class="mb-3">
-                        <label for="last_name" class="form-label">Prénom</label>
-                        <input type="text" class="form-control" id="last_name" name="last_name">
+                        <div class="mb-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="first_name" class="form-label">Nom</label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="last_name" class="form-label">Prénom</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="address1" class="form-label">Adresse</label>
@@ -72,32 +78,44 @@
                         <input type="text" class="form-control" id="address2" name="address2">
                     </div>
                     <div class="mb-3">
-                        <label for="zip_code" class="form-label">Code postal</label>
-                        <input type="text" class="form-control" id="zip_code" name="zip_code">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="zip_code" class="form-label">Code postal</label>
+                                <input type="text" class="form-control" id="zip_code" name="zip_code">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="city" class="form-label">Ville</label>
+                                <input type="text" class="form-control" id="city" name="city">
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label for="city" class="form-label">Ville</label>
-                        <input type="text" class="form-control" id="city" name="city">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="phone1" class="form-label">Téléhpone 1</label>
+                                <input type="text" class="form-control" id="phone1" name="phone1">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="phone2" class="form-label">Téléhpone 2</label>
+                                <input type="text" class="form-control" id="phone2" name="phone2">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="phone3" class="form-label">Téléhpone 3</label>
+                                <input type="text" class="form-control" id="phone3" name="phone3">
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label for="phone1" class="form-label">Téléhpone 1</label>
-                        <input type="text" class="form-control" id="phone1" name="phone1">
-                    </div>
-                    <div class="mb-3">
-                        <label for="phone2" class="form-label">Téléhpone 2</label>
-                        <input type="text" class="form-control" id="phone2" name="phone2">
-                    </div>
-                    <div class="mb-3">
-                        <label for="phone3" class="form-label">Téléhpone 1</label>
-                        <input type="text" class="form-control" id="phone3" name="phone3">
-                    </div>
-                    <div class="mb-3">
-                        <label for="siret" class="form-label">Numéro de SIRET</label>
-                        <input type="text" class="form-control" id="siret" name="siret">
-                    </div>
-                    <div class="mb-3">
-                        <label for="tva_number" class="form-label">Numéro de TVA</label>
-                        <input type="text" class="form-control" id="tva_number" name="tva_number">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="siret" class="form-label">Numéro de SIRET</label>
+                                <input type="text" class="form-control" id="siret" name="siret">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tva_number" class="form-label">Numéro de TVA</label>
+                                <input type="text" class="form-control" id="tva_number" name="tva_number">
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="comment" class="form-label">Commentaire</label>

@@ -2,80 +2,82 @@
 @section('content')
 <div class="mb-9">
     <div class="row align-items-center justify-content-between g-3 mb-4">
-    <div class="col-auto">
-        <h2 class="mb-0">Détail Client</h2>
-    </div>
-    <div class="col-auto">
-        <div class="row g-3">
         <div class="col-auto">
-            <button class="btn btn-phoenix-danger"><span class="fa-solid fa-trash-can me-2"></span>Supprimer Client</button>
+            <a href="{{route('client.index')}}" class="btn btn-subtle-secondary me-1 mb-1" type="button">
+                <i class="fa-solid fa-arrow-left"></i> Retour
+            </a>
         </div>
         <div class="col-auto">
-            <a href="{{route('client.edit', $client)}}" class="btn btn-phoenix-primary"><span class="fas fa-edit me-2"></span>Modifier</a>
+            <div class="row g-3">
+                <div class="col-auto">
+                    <a href="{{route('client.edit', $client)}}" class="btn btn-phoenix-primary"><span class="fas fa-edit me-2"></span>Modifier</a>
+                </div>
+            </div>
         </div>
-        </div>
-    </div>
     </div>
     <div class="row g-5">
     <div class="col-12 col-xxl-4">
         <div class="row g-3">
-        <div class="col-12 col-md-7 col-xxl-12">
-            <div class="card h-xxl-auto">
-            <div class="card-body d-flex flex-column justify-content-between pb-3">
-                <div class="row align-items-center g-5 mb-3 text-center text-sm-start">
-                <div class="col-12 col-sm-auto mb-sm-2">
-                    <div class="avatar avatar-5xl">
-                        <div class="avatar-name rounded-circle">
-                            <span>{{substr($client->company, 0, 1)}}</span>
+            <div class="col-12 col-md-7 col-xxl-12">
+                <div class="card h-xxl-auto">
+                <div class="card-body d-flex flex-column justify-content-between pb-3">
+                    <div class="row align-items-center g-5 mb-3 text-center text-sm-start">
+                    <div class="col-12 col-sm-auto mb-sm-2">
+                        <div class="avatar avatar-5xl">
+                            <div class="avatar-name rounded-circle">
+                                <span>{{substr($client->company, 0, 1)}}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-12 col-sm-auto flex-1">
-                    <h3>{{$client->company}}</h3>
-                    <p class="text-body-secondary">Dernière commande: </p>
-                </div>
-                </div>
-                <div class="d-flex flex-between-center border-top border-dashed pt-4">
-                <div>
-                    <h6>Commande</h6>
-                    <p class="fs-7 text-body-secondary mb-0">{{$client->orders->count()}}</p>
-                </div>
-                <div>
-                    <h6>Total</h6>
-                    <p class="fs-7 text-body-secondary mb-0">{{$client->orders->sum('total_ttc')}} €</p>
-                </div>
-                <div>
-                    <h6>Completion</h6>
-                    <p class="fs-7 text-body-secondary mb-0">97</p>
+                    <div class="col-12 col-sm-auto flex-1">
+                        <h3>{{$client->company}}</h3>
+                        <p class="text-body-secondary">Dernière commande: </p>
+                    </div>
+                    </div>
+                    <div class="d-flex flex-between-center border-top border-dashed pt-4">
+                    <div>
+                        <h6>Commande</h6>
+                        <p class="fs-7 text-body-secondary mb-0">{{$client->orders->count()}}</p>
+                    </div>
+                    <div>
+                        <h6>Total</h6>
+                        <p class="fs-7 text-body-secondary mb-0">{{$client->orders->sum('total_ttc')}} €</p>
+                    </div>
+                    <div>
+                        <h6>Completion</h6>
+                        <p class="fs-7 text-body-secondary mb-0">100</p>
+                    </div>
+                    </div>
                 </div>
                 </div>
             </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-5 col-xxl-12">
-            <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-center mb-3">
-                <h3 class="me-1">Addresse</h3>
-                <button class="btn btn-link p-0"><span class="fas fa-pen fs-8 ms-3 text-body-quaternary"></span></button>
+            <div class="col-12 col-md-5 col-xxl-12">
+                <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                    <h3 class="me-1">Addresse</h3>
+                    </div>
+                    <h5 class="text-body-secondary">{{$client->company}}</h5>
+                    <p class="text-body-secondary">
+                        <a href="https://maps.google.fr/maps?q={{$client->address1 . ' ' . $client->zip_code . ' ' . $client->city}}" target="_blank">
+                            {{$client->address1}}<br />{{$client->zip_code}}, {{$client->city}}<br />
+                        </a>
+                    </p>
+                    <h5 class="text-body-secondary">Email: </h5><a href="mailto:{{$client->email}}">{{$client->email}}</a>
+                    <h5 class="text-body-secondary">Téléphone: </h5><a class="text-body-secondary" href="#">{{$client->phone1}}</a>
+                    <h5 class="text-body-secondary mt-3">SIRET:</h5><a class="text-body-secondary" href="#">{{$client->siret}}</a>
+                    <h5 class="text-body-secondary">N° TVA:</h5><a class="text-body-secondary" href="#">{{$client->tva_number}}</a>
                 </div>
-                <h5 class="text-body-secondary">{{$client->company}}</h5>
-                <p class="text-body-secondary">{{$client->address1}}<br />{{$client->zip_code}}, {{$client->city}}<br /></p>
-                <h5 class="text-body-secondary">Email: </h5><a href="mailto:{{$client->email}}">{{$client->email}}</a>
-                <h5 class="text-body-secondary">Téléphone: </h5><a class="text-body-secondary" href="#">{{$client->phone1}}</a>
-                <h5 class="text-body-secondary mt-3">SIRET:</h5><a class="text-body-secondary" href="#">{{$client->siret}}</a>
-                <h5 class="text-body-secondary">N° TVA:</h5><a class="text-body-secondary" href="#">{{$client->tva_number}}</a>
+                </div>
             </div>
+            <div class="col-12">
+                <div class="card">
+                <div class="card-body">
+                    <h3 class="mb-4">Commentaire</h3>
+                    <p>{!! $client->comment !!}</p>
+                </div>
+                </div>
             </div>
-        </div>
-        <div class="col-12">
-            <div class="card">
-            <div class="card-body">
-                <h3 class="mb-4">Commentaire</h3>
-                <p>{!! $client->comment !!}</p>
-            </div>
-            </div>
-        </div>
         </div>
     </div>
     <div class="col-12 col-xxl-8">

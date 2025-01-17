@@ -8,18 +8,60 @@ use App\Models\Product;
 use App\Models\TVA;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Kyslik\ColumnSortable\Sortable;
 
 class ProductController extends Controller
 {
+    use Sortable;
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::all();
+        $search = $request->input('search');
+        $sort = $request->get('sort', 'id');
+        $direction = $request->get('direction', 'desc');
+
+        $category_filter = $request->input('category');
+        $size_filter = $request->input('size');
+        $color_filter = $request->input('color');
+
+        $products = Product::query();
+
+        if($search) {
+            $products->where('reference', 'like', '%'.$search.'%')
+                ->orWhere('name', 'like', '%'.$search.'%')
+                ->orWhere('price', 'like', '%'.$search.'%')
+                ->orWhere('stock', 'like', '%'.$search.'%');
+        }
+
+        if($category_filter) {
+            $products->where('category_id', $category_filter);
+        }
+
+        if($size_filter) {
+            $products->where('size', $size_filter);
+        }
+
+        if($color_filter) {
+            $products->where('color_id', $color_filter);
+        }
+
+        $products = $products->orderBy($sort, $direction)->paginate(100);
+        $categories = Category::all();
+        $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '2Y', '4Y', '6Y', '8Y', '10Y', '12Y'];
+        $colors = [
+            10 => 'Noir',
+            11 => 'Blanc',
+            16 => 'Beige',
+            28 => 'Bleu Marine (French)',
+        ];
 
         return view('products.index', [
             'products' => $products,
+            'categories' => $categories,
+            'sizes' => $sizes,
+            'colors' => $colors,
         ]);
     }
 

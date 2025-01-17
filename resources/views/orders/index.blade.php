@@ -10,12 +10,7 @@
     </div>
     </div>
     <ul class="nav nav-links mb-3 mb-lg-2 mx-n3">
-    <li class="nav-item"><a class="nav-link active" aria-current="page" href="#"><span>Tous </span><span class="text-body-tertiary fw-semibold">({{$orders->count()}})</span></a></li>
-    <li class="nav-item"><a class="nav-link" href="#"><span>Pending payment </span><span class="text-body-tertiary fw-semibold">(0)</span></a></li>
-    <li class="nav-item"><a class="nav-link" href="#"><span>Unfulfilled </span><span class="text-body-tertiary fw-semibold">(0)</span></a></li>
-    <li class="nav-item"><a class="nav-link" href="#"><span>Completed</span><span class="text-body-tertiary fw-semibold">(0)</span></a></li>
-    <li class="nav-item"><a class="nav-link" href="#"><span>Refunded</span><span class="text-body-tertiary fw-semibold">(0)</span></a></li>
-    <li class="nav-item"><a class="nav-link" href="#"><span>Failed</span><span class="text-body-tertiary fw-semibold">(0)</span></a></li>
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#"><span>Tous </span><span class="text-body-tertiary fw-semibold">({{$orders->count()}})</span></a></li>
     </ul>
     <div id="orderTable" data-list='{"valueNames":["order","total","customer","payment_status","fulfilment_status","delivery_type","date"],"page":10,"pagination":true}'>
     <div class="mb-4">
@@ -23,41 +18,40 @@
         <div class="col-auto">
             <div class="search-box">
             <form class="position-relative">
-                <input class="form-control search-input search" type="search" placeholder="Recherche..." aria-label="Search" />
+                <input class="form-control search-input search" name="search" type="search" placeholder="Recherche..." aria-label="Search" value="{{Request::get('search')}}" />
                 <span class="fas fa-search search-box-icon"></span>
-
             </form>
             </div>
         </div>
         <div class="col-auto scrollbar overflow-hidden-y flex-grow-1">
             <div class="btn-group position-static" role="group">
-            <div class="btn-group position-static text-nowrap" role="group">
-                <button class="btn btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
-                Payment status<span class="fas fa-angle-down ms-2"></span></button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                <li>
-                    <hr class="dropdown-divider" />
-                </li>
-                <li><a class="dropdown-item" href="#">Separated link</a></li>
-                </ul>
-            </div>
-            <div class="btn-group position-static text-nowrap" role="group">
-                <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
-                Fulfilment status<span class="fas fa-angle-down ms-2"></span></button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                <li>
-                    <hr class="dropdown-divider" />
-                </li>
-                <li><a class="dropdown-item" href="#">Separated link</a></li>
-                </ul>
-            </div>
-            <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0">More filters </button>
+                <div class="btn-group position-static text-nowrap" role="group">
+                    <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown"
+                        data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
+                        Statut Commande<span class="fas fa-angle-down ms-2"></span></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        @foreach (App\Models\Order::getStatusLabel() as $i => $orderStatus)
+                            <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_status' => $i])}}">{{$orderStatus}}</a></li>
+                        @endforeach
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_status' => ''])}}">Tous</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group position-static text-nowrap" role="group">
+                    <button class="btn btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
+                        Statut Paiement<span class="fas fa-angle-down ms-2"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_paid' => 1])}}">Payée</a></li>
+                        <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_paid' => 0])}}">Non Payée</a></li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_paid' => ''])}}">Tous</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="col-auto">
@@ -76,13 +70,27 @@
                     <input class="form-check-input" id="checkbox-bulk-order-select" type="checkbox" data-bulk-select='{"body":"order-table-body"}' />
                 </div>
                 </th>
-                <th class="sort white-space-nowrap align-middle pe-3" scope="col" data-sort="order">COMMANDE</th>
-                <th class="sort align-middle ps-8" scope="col" data-sort="customer">CLIENT</th>
-                <th class="sort align-middle text-start pe-3" scope="col" data-sort="fulfilment_status">STATUT</th>
-                <th class="sort align-middle pe-3" scope="col" data-sort="payment_status">PAIEMENT</th>
-                <th class="sort align-middle text-start" scope="col" data-sort="delivery_type">LIVREE LE</th>
-                <th class="sort align-middle text-end" scope="col" data-sort="total">TOTAL</th>
-                <th class="sort align-middle text-end pe-0" scope="col" data-sort="date">DATE</th>
+                <th class="sort white-space-nowrap align-middle pe-3" scope="col" data-sort="order">
+                    @sortablelink('id', 'N°')
+                </th>
+                <th class="sort align-middle ps-8" scope="col" data-sort="customer">
+                    @sortablelink('client_id', 'CLIENT')
+                </th>
+                <th class="sort align-middle text-start pe-3" scope="col" data-sort="fulfilment_status">
+                    @sortablelink('status', 'STATUT')
+                </th>
+                <th class="sort align-middle pe-3" scope="col" data-sort="payment_status">
+                    @sortablelink('paid', 'PAIEMENT')
+                </th>
+                <th class="sort align-middle text-start" scope="col" data-sort="delivery_type">
+                    @sortablelink('delivery_date', 'LIVRAISON')
+                </th>
+                <th class="sort align-middle text-end" scope="col" data-sort="total">
+                    @sortablelink('total_ttc', 'TOTAL')
+                </th>
+                <th class="sort align-middle text-end pe-0" scope="col" data-sort="date">
+                    @sortablelink('created_at', 'DATE')
+                </th>
             </tr>
             </thead>
             <tbody class="list" id="order-table-body">
@@ -136,13 +144,21 @@
         <div class="row align-items-center justify-content-between py-2 pe-0 fs-9">
         <div class="col-auto d-flex">
             <p class="mb-0 d-none d-sm-block me-3 fw-semibold text-body" data-list-info="data-list-info"></p>
-            <a class="fw-semibold" href="#!" data-list-view="*">Voir tous<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
+            <a class="fw-semibold" href="{{ request()->fullUrlWithQuery(['show_all' => 1]) }}" data-list-view="*">Voir tous<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
             <a class="fw-semibold d-none" href="#!" data-list-view="less">View Less<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
         </div>
         <div class="col-auto d-flex">
-            <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
-            <ul class="mb-0 pagination"></ul>
-            <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+            @if(!request()->has('show_all') && $orders->hasPages())
+                @if ($orders->onFirstPage())
+                    <a href="{{ $orders->nextPageUrl() }}" class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></a>
+                @else
+                    <a href="{{ $orders->previousPageUrl() }}" class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></a>
+                    <ul class="mb-0 pagination"></ul>
+                    @if(!$orders->onLastPage())
+                        <a href="{{ $orders->nextPageUrl() }}" class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></a>
+                    @endif
+                @endif
+            @endif
         </div>
         </div>
     </div>

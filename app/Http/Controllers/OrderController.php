@@ -11,15 +11,47 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Kyslik\ColumnSortable\Sortable;
 
 class OrderController extends Controller
 {
+    use Sortable;
+
+    public $sortable = ['id', 'num', 'status', 'client_id', 'total_lines', 'total_ht', 'total_tva', 'total_ttc', 'created_at'];
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::orderBy('id', 'DESC')->get();
+        $search = $request->input('search');
+        $sort = $request->get('sort', 'id');
+        $direction = $request->get('direction', 'desc');
+        $orders = Order::query();
+
+        $order_status_filter = $request->get('order_status');
+        $order_paid_filter = $request->get('order_paid');
+
+        if($search) {
+            $orders = $orders->where('id', 'like', "%{$search}%");
+        }
+
+        if($order_status_filter) {
+            $orders = $orders->where('status', $order_status_filter);
+        }
+
+        if($order_paid_filter || $order_paid_filter === '0') {
+            $orders = $orders->where('paid', $order_paid_filter);
+        }
+
+        $orders->orderBy($sort, $direction);
+
+        if($request->get('show_all')) {
+            $orders = $orders->get();
+        } else {
+            $orders = $orders->paginate(25)
+            ->appends(request()->query());
+        }
 
         return view('orders.index', ['orders' => $orders]);
     }
@@ -294,6 +326,18 @@ class OrderController extends Controller
         ]);
 
         $product = Product::where('size', $request->get('size'))->where('color_id', $design->color_id)->first();
+
+        $orderLine->update([
+            'product_id' => $product->id,
+            'design_id' => $design->id,
+            'reference' => $design->reference,
+            'name' => $design->name,
+            'size' => $product->size,
+            'color' => $product->color ? $product->color->name : '',
+            'quantity' => $request->get('quantity'),
+            'price' => $request->get('price'),
+            'updated_by' => $user->id
+        ]);
 
         return response([
             'status' => 'success',

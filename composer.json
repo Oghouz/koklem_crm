@@ -9,6 +9,7 @@
         "barryvdh/laravel-dompdf": "^3.0",
         "dompdf/dompdf": "*",
         "guzzlehttp/guzzle": "^7.2",
+        "kyslik/column-sortable": "^6.6",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",

@@ -8,17 +8,14 @@
     </div>
     </div>
     <ul class="nav nav-links mb-3 mb-lg-2 mx-n3">
-    <li class="nav-item"><a class="nav-link active" aria-current="page" href="#"><span>All </span><span class="text-body-tertiary fw-semibold">(68817)</span></a></li>
-    <li class="nav-item"><a class="nav-link" href="#"><span>Published </span><span class="text-body-tertiary fw-semibold">(70348)</span></a></li>
-    <li class="nav-item"><a class="nav-link" href="#"><span>Drafts </span><span class="text-body-tertiary fw-semibold">(17)</span></a></li>
-    <li class="nav-item"><a class="nav-link" href="#"><span>On discount </span><span class="text-body-tertiary fw-semibold">(810)</span></a></li>
+    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{{route('product.index')}}"><span>Tous </span><span class="text-body-tertiary fw-semibold">({{$products->count()}})</span></a></li>
     </ul>
     <div id="products" data-list='{"valueNames":["product","price","category","tags","vendor","time"],"page":10,"pagination":true}'>
     <div class="mb-4">
         <div class="d-flex flex-wrap gap-3">
         <div class="search-box">
             <form class="position-relative">
-                <input class="form-control search-input search" type="search" placeholder="Recherche..." aria-label="Search" />
+                <input class="form-control search-input search" name="search" type="search" value="{{request('search')}}" placeholder="Recherche..." aria-label="Search" />
                 <span class="fas fa-search search-box-icon"></span>
             </form>
         </div>
@@ -26,31 +23,52 @@
             <div class="btn-group position-static" role="group">
             <div class="btn-group position-static text-nowrap">
                 <button class="btn btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
-                Category<span class="fas fa-angle-down ms-2"></span></button>
+                    @if(request('category'))
+                        <i class="fa fa-check"></i> {{$categories->find(request('category'))->name}}
+                    @else
+                        Catégorie<span class="fas fa-angle-down ms-2"></span>
+                    @endif
+                </button>
                 <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    @foreach ($categories as $category)
+                        <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['category' => $category->id])}}">
+                            @if(request('category') == $category->id) <i class="fa fa-check"></i> @endif{{$category->name}}</a>
+                        </li>
+                    @endforeach
                 <li>
                     <hr class="dropdown-divider" />
                 </li>
-                <li><a class="dropdown-item" href="#">Separated link</a></li>
+                <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['category' => ''])}}">Tous</a></li>
                 </ul>
             </div>
             <div class="btn-group position-static text-nowrap">
                 <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
-                Vendor<span class="fas fa-angle-down ms-2"></span></button>
+                    Taille<span class="fas fa-angle-down ms-2"></span>
+                </button>
                 <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    @foreach ($sizes as $size)
+                        <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['size' => $size])}}">{{$size}}</a></li>
+                    @endforeach
                 <li>
                     <hr class="dropdown-divider" />
                 </li>
-                <li><a class="dropdown-item" href="#">Separated link</a></li>
+                <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['size' => ''])}}">Tous</a></li>
                 </ul>
             </div>
-            <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0">More filters</button>
+            <div class="btn-group position-static text-nowrap">
+                <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown"
+                    data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
+                    Couleur<span class="fas fa-angle-down ms-2"></span></button>
+                <ul class="dropdown-menu">
+                    @foreach ($colors as $i_color => $color)
+                        <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['color' => $i_color])}}">{{$color}}</a></li>
+                    @endforeach
+                    <li>
+                        <hr class="dropdown-divider" />
+                    </li>
+                    <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['color' => ''])}}">Tous</a></li>
+                </ul>
+            </div>
             </div>
         </div>
         <div class="ms-xxl-auto">
@@ -64,18 +82,30 @@
         <table class="table fs-9 mb-0">
             <thead>
             <tr>
-                <th class="white-space-nowrap fs-9 align-middle ps-0" style="max-width:20px; width:18px;">
+                <th class="white-space-nowrap fs-9 align-middle ps-0">
                 <div class="form-check mb-0 fs-8">
                     <input class="form-check-input" id="checkbox-bulk-products-select" type="checkbox" data-bulk-select='{"body":"products-table-body"}' />
                 </div>
                 </th>
-                <th class="sort white-space-nowrap align-middle fs-10" scope="col" style="width:70px;"></th>
-                <th class="sort white-space-nowrap align-middle" scope="col" style="width:70px;">REF</th>
-                <th class="sort white-space-nowrap align-middle ps-4" scope="col" style="width:350px;">PRODUCT NAME</th>
-                <th class="sort align-middle ps-4" scope="col"  style="width:150px;">TAILLE</th>
-                <th class="sort align-middle ps-3" scope="col" style="width:250px;">COULEUR</th>
-                <th class="sort align-middle text-center ps-4" scope="col" style="width:125px;">STOCK</th>
-                <th class="sort align-middle ps-4" scope="col" style="width:50px;">CREER LE</th>
+                <th class="sort white-space-nowrap align-middle fs-10" scope="col"></th>
+                <th class="sort white-space-nowrap align-middle" scope="col">
+                    @sortablelink('reference', 'REFERENCE')
+                </th>
+                <th class="sort white-space-nowrap align-middle ps-4" scope="col">
+                    @sortablelink('name', 'NOM')
+                </th>
+                <th class="sort align-middle ps-4" scope="col">
+                    @sortablelink('size', 'TAILLE')
+                </th>
+                <th class="sort align-middle ps-3" scope="col">
+                    @sortablelink('color_id', 'COULEUR')
+                </th>
+                <th class="sort align-middle text-center ps-4" scope="col">
+                    @sortablelink('stock', 'STOCK')
+                </th>
+                <th class="sort align-middle ps-4" scope="col">
+                    @sortablelink('created_at', 'CREER LE')
+                </th>
                 <th class="sort text-end align-middle pe-0 ps-4" scope="col"></th>
             </tr>
             </thead>
@@ -89,7 +119,7 @@
                     </td>
                     <td class="align-middle white-space-nowrap py-0">
                         <a class="d-block border border-translucent rounded-2" href="{{route('product.show', $product)}}">
-                            <img src="{{asset('images/products').'/'.$product->image}}" alt="" width="53" />
+                            <img src="{{asset('images/products') . '/' . $product->image}}" alt="" width="53" />
                         </a>
                     </td>
                     <td class="align-middle white-space-nowrap py-0">
