@@ -168,16 +168,12 @@ class OrderController extends Controller
             'comment' => 'nullable|string',
             'payment_method' => 'nullable|string',
             'payment_date' => 'nullable|date',
-            'delivery_date' => 'nullable|date',
-            'lines' => 'required|array|min:1',
-            'lines.*.product_id' => 'required|exists:products,id',
-            'lines.*.quantity' => 'required|numeric|min:1',
-            'lines.*.price' => 'required|numeric|min:0',
+            'delivery_date' => 'nullable|date'
         ]);
 
         // Mise à jour des informations de la commande
         $orderData = [
-            'status' => $validated['client_id'] ?? null,
+            'status' => $validated['status'] ?? null,
             'client_id' => $validated['client_id'] ?? null,
             'comment' => $validated['comment'] ?? null,
             'payment_method' => $validated['payment_method'] ?? null,
@@ -190,30 +186,6 @@ class OrderController extends Controller
         }
 
         $order->update($orderData);
-
-        // On supprime les lignes existantes avant de les recréer
-        $order->orderLines()->delete();
-
-        $total = 0;
-        foreach ($validated['lines'] as $lineData) {
-            $lineTotal = $lineData['quantity'] * $lineData['price'];
-            $total += $lineTotal;
-
-            OrderLine::create([
-                'order_id' => $order->id,
-                'product_id' => $lineData['product_id'],
-                'quantity' => $lineData['quantity'],
-                'price' => $lineData['price'],
-                'line_total' => $lineTotal,
-                'comment' => null,
-                'updated_by' => $user->id,
-            ]);
-        }
-
-        $order->update([
-            'total' => $total,
-            'total_lines' => count($validated['lines']),
-        ]);
 
         return redirect()->route('order.edit', $order->id)->with('success', 'Commande mise à jour avec succès !');
     }
@@ -304,6 +276,27 @@ class OrderController extends Controller
 
         return response([
             'status' => 'success'
+        ], 201);
+    }
+
+    public function updateOrderLine(Request $request, $order_line_id)
+    {
+        $user = Auth::user();
+        $orderLine = OrderLine::findOrFail($order_line_id);
+        $design = Design::findOrFail($request->get('design_id'));
+        $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+        $this->validate($request, [
+            'design_id' => 'required|exists:designs,id',
+            'size' => 'required|string',
+            'quantity' => 'required|numeric|min:1',
+            'price' => 'required|numeric|min:0'
+        ]);
+
+        $product = Product::where('size', $request->get('size'))->where('color_id', $design->color_id)->first();
+
+        return response([
+            'status' => 'success',
         ], 201);
     }
 

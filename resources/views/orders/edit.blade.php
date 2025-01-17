@@ -79,9 +79,9 @@
                             <label for="payment_method">Mode de paiement</label>
                             <select name="payment_method" id="payment_method" class="form-control">
                                 <option value="">- Séléctionner le mode de paiement</option>
-                                <option value="Virement">Virement</option>
-                                <option value="Carte Bancaire">Carte Bancaire</option>
-                                <option value="Espèces">Espèces</option>
+                                <option value="Virement" @if($order->payment_method == "Virement") selected @endif>Virement</option>
+                                <option value="Carte Bancaire" @if($order->payment_method == "Carte Bancaire") selected @endif>Carte Bancaire</option>
+                                <option value="Espèces" @if($order->payment_method == "Espèces") selected @endif>Espèces</option>
                             </select>
                         </div>
                     </div>
@@ -141,7 +141,7 @@
                                                 <a class="dropdown-item" href="{{route('design.show', $line->product)}}" target="_blank">
                                                     <i class="fa fa-eye"></i> Détail
                                                 </a>
-                                                <button type="button" class="dropdown-item btn-sm" onclick="editOrderLine({{$line->id}})"><i class="fa fa-edit"></i> Modifier</button>
+                                                <button type="button" class="dropdown-item btn-sm" onclick="editOrderLine({{$line->id}}, {{$line->design->id}}, '{{$line->size}}', {{$line->quantity}}, {{$line->price}})"><i class="fa fa-edit"></i> Modifier</button>
                                                 <div class="dropdown-divider"></div>
                                                 <button type="button" class="btn-sm text-danger dropdown-item" onclick="deleteOrderLine({{$line->id}})">
                                                     <i class="fa fa-trash"></i> Supprimer
@@ -189,8 +189,9 @@
     </div>
 </div>
 
+<!-- Template order line -->
 <template id="order-line-template">
-    <tr>
+    <tr class="bg-secondary-subtle">
         <td colspan="3">
             <select name="##design_id##" class="form-select select-product">
                 <option value="">-- Sélectionnez un produit --</option>
@@ -228,7 +229,7 @@
         <td></td>
         <td class="text-end">
             <input type="hidden" name="order_id" value="{{$order->id}}" />
-            <button type="button" class="btn btn-sm btn-success" onclick="addOrderLine(##order_line_index##)"><i class="fa fa-check"></i></button>
+            <button type="button" id="valide-order-line-btn" class="btn btn-sm btn-success" onclick="addOrderLine(##order_line_index##)"><i class="fa fa-check"></i></button>
             <button type="button" class="btn btn-sm btn-danger remove-line">X</button>
         </td>
     </tr>
@@ -367,9 +368,83 @@
         });
     }
 
-    function editOrderLine(order_line_id) {
-        let template = $('#order-line-template').html();
+    function editOrderLine(order_line_id, design_id, size, quantity, price) {
+        let template = $('#order-line-template').html()
+            .replace('##design_id##', `lines[${order_line_id}][design_id]`)
+            .replace('##size##', `lines[${order_line_id}][size]`)
+            .replace('##quantity##', `lines[${order_line_id}][quantity]`)
+            .replace('##price##', `lines[${order_line_id}][price]`)
+            .replace('##order_line_index##', `${order_line_id}`)
+            .replace('addOrderLine', 'updateOderLine');
         $('#line-'+order_line_id).replaceWith(template)
+         $('select[name="lines[' + order_line_id + '][design_id]"]').val(design_id);
+         $('select[name="lines[' + order_line_id + '][size]"]').val(size);
+         $('input[name="lines[' + order_line_id + '][quantity]"]').val(quantity);
+         $('input[name="lines[' + order_line_id + '][price]"]').val(price);
+    }
+
+    function updateOderLine(order_line_id) {
+
+        $('#valide-order-line-btn').html('<i class="fa-solid fa-spinner fa-spin"></i>');
+        let design_id = $('select[name="lines[' + order_line_id + '][design_id]"]').val();
+        let size = $('select[name="lines[' + order_line_id + '][size]"]').val();
+        let quantity = $('input[name="lines[' + order_line_id + '][quantity]"]').val();
+        let price = $('input[name="lines[' + order_line_id + '][price]"]').val();
+
+        if (isNaN(design_id) || !design_id) {
+            Swal.fire({
+                text: "Séléctionner un produit.",
+                icon: "error",
+                draggable: true
+            });
+            return;
+        }
+
+        if (isNaN(quantity) || quantity <= 0) {
+            Swal.fire({
+                text: "Quantité invalide.",
+                icon: "error",
+                draggable: true
+            });
+            return;
+        }
+
+        if (isNaN(price) || price <= 0) {
+            Swal.fire({
+                text: "Prix invalide.",
+                icon: "error",
+                draggable: true
+            });
+            return;
+        }
+
+        const data = {
+            order_id: '{{$order->id}}',
+            order_line_id: order_line_id,
+            design_id: design_id,
+            size: size,
+            quantity: quantity,
+            price: price
+        };
+
+        axios.put('/orderLine/update/'+order_line_id, data)
+            .then((response) => {
+                Swal.fire({
+                    position: "top-end",
+                    text: "Mise à jour réussie !",
+                    icon: "success",
+                    draggable: true,
+                    showConfirmButton: false,
+                    timer: 1000
+                }).then(() => {
+                    // Reload the page after the user clicks "OK"
+                    location.reload();
+                });
+            }).catch((error) => {
+                console.error(error)
+            });
+
+        console.log(data);
     }
 
     function deleteOrderLine(order_line_id) {

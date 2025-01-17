@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
      */
     Route::prefix('orderLine')->group(function () {
         Route::post('add', [OrderController::class, 'addOrderLine'])->name('orderLine.add');
+        Route::put('update/{order_line_id}', [OrderController::class, 'updateOrderLine'])->name('orderLine.update');
         Route::delete('delete/{order_line_id}', [OrderController::class, 'deleteOrderLine'])->name('orderLine.delete');
     });
 
