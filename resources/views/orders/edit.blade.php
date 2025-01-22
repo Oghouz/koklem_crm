@@ -80,6 +80,7 @@
                             <select name="payment_method" id="payment_method" class="form-control">
                                 <option value="">- Séléctionner le mode de paiement</option>
                                 <option value="Virement" @if($order->payment_method == "Virement") selected @endif>Virement</option>
+                                <option value="Chèque" @if($order->payment_method == "Chèque") selected @endif>Chèque</option>
                                 <option value="Carte Bancaire" @if($order->payment_method == "Carte Bancaire") selected @endif>Carte Bancaire</option>
                                 <option value="Espèces" @if($order->payment_method == "Espèces") selected @endif>Espèces</option>
                             </select>

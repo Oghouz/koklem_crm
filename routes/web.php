@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DesignController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -36,6 +37,11 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('stock', StockController::class);
     Route::resource('invoice', InvoiceController::class);
+
+    /**
+     * Home page statistic
+     */
+    Route::post('api/getSalesData', [HomeController::class, 'getSalesData']);
 
     /**
      * Order

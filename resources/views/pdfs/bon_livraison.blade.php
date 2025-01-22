@@ -1,70 +1,93 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bon de Livraison</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Bon de Livraison #{{$order->id}}</title>
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <style>
+        * {
+            margin: 5px;
+            font-size: 12px;
+        }
         p {
             padding: 0;
             margin: 0;
         }
-        .small {
-            font-size: 0.8em;
+        td {
+            padding: 2px !important;
+            margin: 0 !important;
         }
-        thead {
-            background-color: #dde0e2;
-            font-size: 0.8em;
+        .fw-bold {
             font-weight: bold;
         }
     </style>
 </head>
-<body>
-    
-    <div class="row">
-        <div class="col">
-            <h2>BON DE LIVRAISON</h2>    
-            <p>Commande #{{ $order->num }}</p>
-            <p>Date : {{ $order->created_at->format('d/m/Y') }}</p>
-            <p>Client : {{ $order->client->company }}</p>
-        </div>
-        <div class="col">
-            <b>Client: </b>
-            <p>{{ $order->client->company }}</p>
-        </div>
-    </div>
 
-    <hr>
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Réf</th>
-                <th>Désignation</th>
-                <th>Taille</th>
-                <th>Qté commandée</th>
-                <th>Qté livrée</th>
-            </tr>
-        </thead>
-        <tbody class="small">
-            @foreach($order->orderLines as $line)
-            <tr>
-                <td>{{ $line->design->reference }}</td>
-                <td class="small">{{ $line->design->name }}</td>
-                <td class="text-center">{{ $line->size }}</td>
-                <td class="text-center">{{ $line->quantity }}</td>
-                <td class="text-center">{{ $line->quantity }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-        <tfoot>
-            <tr class="mt-5">
-                <td colspan="3" class="text-end">TOTAL</td>
-                <td class="text-center">45</td>
-                <td class="text-center">45</td>
-            </tr>
-        </tfoot>
-    </table>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<body>
+    <div class="container">
+        <h2>BON DE LIVRAISON</h2>
+        <div class="row">
+            <div class="col-xs-6">
+                Commande : #{{ $order->id }}<br>
+                Date : {{ $order->created_at->format('d/m/Y') }}
+            </div>
+            <div class="col-xs-6">
+                <p class="fw-bold">{{ $order->client->company }}</p>
+                {{ $order->client->address1 }}<br>
+                {{ $order->client->zip_code . ', ' . $order->client->city }}
+            </div>
+        </div>
+
+        <!-- Clearfix to ensure table is below -->
+        <div style="clear: both;"></div>
+
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Réf</th>
+                    <th>Désignation</th>
+                    <th>Taille</th>
+                    <th>Qté cmdée</th>
+                    <th>Qté livrée</th>
+                </tr>
+            </thead>
+            <tbody class="small">
+                {{$total = 0}}
+                @foreach($finalLines as $line)
+                    <tr>
+                        <td class="small">{{ $line['reference'] }}</td>
+                        <td class="small">{{ $line['name'] }}</td>
+                        <td class="text-center">{{ $line['size'] }}</td>
+                        <td class="text-center">{{ $line['quantity'] }}</td>
+                        <td class="text-center">{{ $line['quantity'] }}</td>
+                    </tr>
+                    {{$total += $line['quantity']}}
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end"></td>
+                    <td class="text-center fw-bold">{{$total}}</td>
+                    <td class="text-center fw-bold">{{$total}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right">TOTAL H.T</td>
+                    <td class="text-right">{{number_format($order->total_ht, 2, ',', ' ')}}€</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right">TVA 20%</td>
+                    <td class="text-right">{{number_format($order->total_tva, 2, ',', ' ')}}€</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right">TOTAL T.T.C</td>
+                    <td class="text-right">{{number_format($order->total_ttc, 2, ',', ' ')}}€</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 </body>
+
 </html>

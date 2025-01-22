@@ -43,7 +43,11 @@
             </div>
             <div class="btn-group position-static text-nowrap">
                 <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
-                    Taille<span class="fas fa-angle-down ms-2"></span>
+                    @if(request('size'))
+                        <i class="fa fa-check"></i> {{$sizes[array_search(request('size'), $sizes)]}}
+                    @else
+                        Taille<span class="fas fa-angle-down ms-2"></span>
+                    @endif
                 </button>
                 <ul class="dropdown-menu">
                     @foreach ($sizes as $size)
@@ -56,9 +60,13 @@
                 </ul>
             </div>
             <div class="btn-group position-static text-nowrap">
-                <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown"
-                    data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
-                    Couleur<span class="fas fa-angle-down ms-2"></span></button>
+                <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
+                    @if(request('color'))
+                        <i class="fa fa-check"></i> {{$colors[request('color')]}}
+                    @else
+                        Couleur<span class="fas fa-angle-down ms-2"></span>
+                    @endif
+                </button>
                 <ul class="dropdown-menu">
                     @foreach ($colors as $i_color => $color)
                         <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['color' => $i_color])}}">{{$color}}</a></li>

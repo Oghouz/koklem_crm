@@ -115,6 +115,42 @@
         </div>
     </div>
 
+    <div class="row mt-3">
+        <div class="col-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title"><i class="fa fa-shirt"></i> Préparation de T-shirt</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table-bordered">
+                        <thead>
+                            <th>Couleur</th>
+                            <th>Taille</th>
+                            <th>Quantité</th>
+                        </thead>
+                        <tbody>
+                            @php $totalPrepare = 0 @endphp
+                            @foreach ($productsPrepare as $prepareProduct)
+                                <tr class="p-1">
+                                    <td>{{$prepareProduct['color']}}</td>
+                                    <td class="text-center"><span class="badge bg-dark">{{$prepareProduct['size']}}</span></td>
+                                    <td class="text-center fw-bold">{{$prepareProduct['quantity']}}</td>
+                                </tr>
+                                @php $totalPrepare+= $prepareProduct['quantity'] @endphp
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2">TOTAL</td>
+                                <td class="text-center fw-bold">{{$totalPrepare}}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Image Modal -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

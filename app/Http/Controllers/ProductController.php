@@ -31,8 +31,7 @@ class ProductController extends Controller
         if($search) {
             $products->where('reference', 'like', '%'.$search.'%')
                 ->orWhere('name', 'like', '%'.$search.'%')
-                ->orWhere('price', 'like', '%'.$search.'%')
-                ->orWhere('stock', 'like', '%'.$search.'%');
+                ->orWhere('size', 'like', '%'.$search.'%');
         }
 
         if($category_filter) {

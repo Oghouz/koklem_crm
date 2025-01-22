@@ -172,7 +172,42 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        return view('orders.show', compact('order'));
+        $productsPrepare = [];
+        foreach ($order->orderLines as $line) {
+            if (!$line->size) {
+                continue;
+            }
+            if (isset($productsPrepare[$line->product_id])) {
+                $productsPrepare[$line->product_id]['quantity'] += $line->quantity;
+            } else {
+                $productsPrepare[$line->product_id] = [
+                    'ref' => $line->product->reference,
+                    'color' => $line->product->color->name,
+                    'size' => $line->product->size,
+                    'quantity' => $line->quantity
+                ];
+            }
+        }
+
+        // Définir l'ordre des tailles
+        $sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+        // Fonction de tri
+        usort($productsPrepare, function ($a, $b) use ($sizeOrder) {
+            // Comparer par couleur
+            $colorComparison = strcmp($a['color'], $b['color']);
+            if ($colorComparison !== 0) {
+                return $colorComparison;
+            }
+
+            // Comparer par taille
+            $aSizeIndex = array_search($a['size'], $sizeOrder);
+            $bSizeIndex = array_search($b['size'], $sizeOrder);
+
+            return $aSizeIndex <=> $bSizeIndex;
+        });
+
+        return view('orders.show', compact('order', 'productsPrepare'));
     }
 
     /**
@@ -232,19 +267,65 @@ class OrderController extends Controller
 
     public function generatePDF($id, $type)
     {
-        // Récupérer la commande
+        // Récupérer la commande avec les relations nécessaires
         $order = Order::with('orderLines.design', 'client')->findOrFail($id);
+
+        // Initialiser les collections pour les lignes regroupées et non regroupées
+        $groupedLines = collect();
+        $nonGroupedLines = collect();
+
+        // Grouper les lignes par `design_id` et `quantity`
+        $order->orderLines->groupBy(function ($line) {
+            return $line->design_id . '-' . $line->quantity;
+        })->each(function ($lines) use ($groupedLines, $nonGroupedLines) {
+            // Vérifier si toutes les tailles XS à XXL sont présentes
+            $requiredSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+            $lineSizes = $lines->pluck('size')
+                ->map(fn($size) => strtoupper(trim($size))) // Normaliser les tailles
+                ->unique()
+                ->sort()
+                ->values()
+                ->all();
+
+            // Comparer les tailles sans tenir compte de l'ordre
+            if (count($lineSizes) === count($requiredSizes) && !array_diff($requiredSizes, $lineSizes)) {
+                // Ajouter une ligne regroupée
+                $firstLine = $lines->first();
+                $groupedLines->push([
+                    'design_id' => $firstLine->design_id,
+                    'reference' => $firstLine->design->reference,
+                    'name' => $firstLine->design->name,
+                    'size' => 'XS à XXL', // Taille combinée
+                    'quantity' => $lines->first()->quantity*6,
+                    'price' => $firstLine->price,
+                ]);
+            } else {
+                // Ajouter chaque ligne individuellement si elle ne remplit pas les conditions
+                foreach ($lines as $line) {
+                    $nonGroupedLines->push([
+                        'design_id' => $line->design_id,
+                        'reference' => $line->design->reference,
+                        'name' => $line->design->name,
+                        'size' => $line->size,
+                        'quantity' => $line->quantity,
+                        'price' => $line->price,
+                    ]);
+                }
+            }
+        });
+
+        // Fusionner les lignes regroupées et non regroupées
+        $finalLines = $groupedLines->merge($nonGroupedLines);
 
         // Déterminer le type de document
         $view = $type === 'bl' ? 'pdfs.bon_livraison' : 'pdfs.facture';
 
         // Charger la vue correspondante pour le PDF
-        $html = view($view, compact('order'))->render();
+        $html = view($view, compact('order', 'finalLines'))->render();
 
-        // Options pour Dompdf
         $options = new Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isRemoteEnabled', true);
+        $options->set('isRemoteEnabled', true); // Autoriser les fichiers distants
 
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
@@ -258,6 +339,7 @@ class OrderController extends Controller
         // Téléchargement du fichier PDF
         return $dompdf->stream($fileName, ['Attachment' => false]);
     }
+
 
     public function addOrderLine(Request $request)
     {
