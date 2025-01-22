@@ -72,10 +72,10 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                     <div>
-                        <h5 class="mb-1">Total commandes
+                        <h5 class="mb-1">Montant Total
                             <span class="badge badge-phoenix badge-phoenix-warning rounded-pill fs-9 ms-2"></span>
                         </h5>
-                        <h6 class="text-body-tertiary">Last 7 days</h6>
+                        <h6 class="text-body-tertiary"></h6>
                     </div>
                     <h4>{{number_format($orders->sum('total_ttc', 2, ',', ' '))}}€</h4>
                     </div>
@@ -85,13 +85,13 @@
                     <div class="mt-2">
                     <div class="d-flex align-items-center mb-2">
                         <div class="bullet-item bg-primary me-2"></div>
-                        <h6 class="text-body fw-semibold flex-1 mb-0">Completed</h6>
-                        <h6 class="text-body fw-semibold mb-0">52%</h6>
+                        <h6 class="text-body fw-semibold flex-1 mb-0">Payée</h6>
+                        <h6 class="text-body fw-semibold mb-0">{{number_format($orders->where('paid', true)->sum('total_ttc', 2, ',', ' '))}}€</h6>
                     </div>
                     <div class="d-flex align-items-center">
                         <div class="bullet-item bg-primary-subtle me-2"></div>
-                        <h6 class="text-body fw-semibold flex-1 mb-0">Pending payment</h6>
-                        <h6 class="text-body fw-semibold mb-0">48%</h6>
+                        <h6 class="text-body fw-semibold flex-1 mb-0">En attente paiement</h6>
+                        <h6 class="text-body fw-semibold mb-0">{{number_format($orders->where('paid', false)->sum('total_ttc', 2, ',', ' '))}}€</h6>
                     </div>
                     </div>
                 </div>
@@ -180,32 +180,31 @@
         </div>
 
         <div class="mx-n4 px-4 mx-lg-n6 px-lg-6 bg-body-emphasis pt-6 pb-9 border-top">
-        <div class="row g-6">
-        <div class="col-12 col-xl-6">
-            <div class="me-xl-4">
-            <div>
-                <h3>Projection vs actual</h3>
-                <p class="mb-1 text-body-tertiary">Actual earnings vs projected earnings</p>
-            </div>
-            <div class="echart-projection-actual" style="height:300px; width:100%"></div>
+            <div class="row g-6">
+                <div class="col-12 col-xl-12">
+                    <div class="me-xl-4">
+                        <div id="echart-designs" style="width: 100%; height: 500px;"></div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-12 col-xl-6">
-            <div>
-            <h3>Returning customer rate</h3>
-            <p class="mb-1 text-body-tertiary">Rate of customers returning to your shop over time</p>
+
+        <div class="mx-n4 px-4 mx-lg-n6 px-lg-6 bg-body-emphasis pt-6 pb-9 border-top">
+            <div class="row g-6">
+                <div class="col-12 col-xl-12">
+                    <div class="me-xl-4">
+                        <div id="echart-products" style="width: 100%; height: 500px;"></div>
+                    </div>
+                </div>
             </div>
-            <div class="echart-returning-customer" style="height:300px;"></div>
         </div>
-    </div>
-</div>
 @endsection
 
 @section('script')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var chart = echarts.init(document.getElementById('sales-chart-year'));
 
+        var chartSales = echarts.init(document.getElementById('sales-chart-year'));
         var options = {
             title: {
                 //text: 'Ventes quotidiennes',
@@ -223,7 +222,7 @@
             },
             xAxis: {
                 type: 'category',
-                data: @json($dates) // Données des dates envoyées depuis le contrôleur
+                data: @json($salesData['dates']) // Données des dates envoyées depuis le contrôleur
             },
             yAxis: [
                 {
@@ -257,7 +256,7 @@
                 {
                     name: 'Montant total (€)',
                     type: 'line',
-                    data: @json($totals), // Montant total des ventes
+                    data: @json($salesData['totals']), // Montant total des ventes
                     yAxisIndex: 0, // Associe cette série au premier axe Y (montant)
                     itemStyle: {
                         color: '#5470C6'
@@ -266,7 +265,7 @@
                 {
                     name: 'Nombre de ventes',
                     type: 'bar',
-                    data: @json($ventes), // Nombre de ventes
+                    data: @json($salesData['ventes']), // Nombre de ventes
                     yAxisIndex: 1, // Associe cette série au deuxième axe Y (nombre de ventes)
                     itemStyle: {
                         color: '#91CC75'
@@ -274,8 +273,154 @@
                 }
             ]
         };
+        chartSales.setOption(options);
 
-        chart.setOption(options);
+        /**
+         *  Echart Design
+         */
+
+        // Initialisation de l'instance ECharts
+        var echartDesigns = echarts.init(document.getElementById('echart-designs'));
+        // Configuration améliorée du graphique
+        var echartDesingsOption = {
+            title: {
+                text: 'Statistiques des ventes par design',
+                subtext: 'Référence des T-Shirts et leur nombre de ventes',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow' // Met en évidence la barre correspondante
+                }
+            },
+            legend: {
+                data: ['T-Shirt'],
+                top: 'bottom'
+            },
+            xAxis: {
+                type: 'category',
+                data: @json($designsData['reference']),
+                axisLabel: {
+                    rotate: 45, // Incline les étiquettes si elles sont longues
+                    formatter: function (value) {
+                        return value.length > 10 ? value.substring(0, 10) + '...' : value; // Tronque si trop long
+                    }
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Nombre de ventes',
+                axisLabel: {
+                    formatter: '{value}'
+                }
+            },
+            series: [
+                {
+                    name: 'T-Shirt',
+                    type: 'bar',
+                    data: @json($designsData['total_sales']),
+                    itemStyle: {
+                        color: '#5470C6' // Couleur personnalisée
+                    },
+                    label: {
+                        show: true,
+                        position: 'top', // Affiche les valeurs sur les barres
+                        formatter: '{c}' // Affiche la valeur brute
+                    }
+                }
+            ],
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '10%',
+                containLabel: true
+            }
+        };
+        // Appliquer les options au graphique
+        echartDesigns.setOption(echartDesingsOption);
+
+
+
+        /**
+         *  Echart Product
+         */ 
+        // Initialisation de l'instance ECharts
+        var echartProducts = echarts.init(document.getElementById('echart-products'));
+
+        // Données récupérées depuis le backend
+        var productsData = @json($productsData); // Assurez-vous que $data contient la nouvelle structure
+
+        // Préparer les axes et les données
+        var categories = [];
+        var seriesData = [];
+
+        Object.keys(productsData).forEach(productId => {
+            productsData[productId].details.forEach(detail => {
+                // Crée une catégorie pour chaque combinaison de taille et couleur
+                categories.push(`${detail.size} | ${detail.color}`);
+                seriesData.push(detail.sales);
+            });
+        });
+
+        // Configuration du graphique
+        var echartProductsOption = {
+            title: {
+                text: 'Statistiques des ventes par T-Shirt (taille et couleur)',
+                subtext: 'Répartition des T-shirts vendus',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: categories,
+                axisLabel: {
+                    rotate: 45, // Incline les étiquettes pour éviter les chevauchements
+                    formatter: function (value) {
+                        return value.length > 20 ? value.substring(0, 20) + '...' : value; // Tronque si trop long
+                    }
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Nombre de ventes',
+                axisLabel: {
+                    formatter: '{value}'
+                }
+            },
+            series: [
+                {
+                    name: 'Ventes',
+                    type: 'bar',
+                    data: seriesData,
+                    itemStyle: {
+                        color: '#5470C6' // Couleur des barres
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: '{c}' // Affiche la valeur brute
+                    }
+                }
+            ],
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '10%',
+                containLabel: true
+            }
+        };
+
+        // Appliquer les options au graphique
+        echartProducts.setOption(echartProductsOption);
+
+
+
     });
 
 </script>

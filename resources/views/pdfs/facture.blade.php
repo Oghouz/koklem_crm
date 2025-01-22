@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FACTURE N° {{date('y') . '-' . str_pad($order->id, 5, '0', STR_PAD_LEFT)}}</title>
+    <title>FACTURE N° {{date('y') . str_pad($order->id, 4, '0', STR_PAD_LEFT)}}</title>
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <style>
         * {
@@ -12,7 +12,7 @@
             font-size: 12px;
         }
         body {
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
 
         p {
@@ -33,63 +33,77 @@
             margin: 0;
             padding: 0;
             font-weight: bold;
+            font-size: 30px;
         }
         .header-info {
-            border-radius: 8px;
-            background-color: rgb(229, 229, 229);
+            border-radius: 3px;
+            background-color: rgb(230, 230, 230);
             padding: 10px;
             font-weight: bold;
             width: 300px;
+            border-bottom: 3px solid rgb(9, 163, 78);
         }
         .footer {
             position: absolute; /* Remplacez fixed par absolute si nécessaire */
             bottom: 0; 
             left: 0; 
             right: 0;
-            height: 30px; 
+            height: 35px; 
             padding: 8px;
             font-size: 9px !important;
             line-height: 12px;
             border-top: 1px solid #ccc; /* Ajoutez une bordure pour différencier */
         }
         table {
-            width: 95%;
+            width: 100%;
             border: 1px solid #ccc;
         }
         thead {
             background-color: rgb(49, 49, 49);
+            border: 1px solid #999999;
             color: white;
         }
         th, td {
-            border-bottom: 1px solid #808080;
+            border-bottom: 1px solid #888888;
+            border-right: 1px solid #888888;
             padding: 3px 5px !important;
         }
+        .page-number:after {
+            content: counter(page) "/" counter(pages);
+            position: absolute;
+            right: 10px;
+            bottom: 0px;
+            font-size: 9px;
+            color: #555;
+        }
+
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h3 class="title">FACTURE N° {{date('y') . '-' . str_pad($order->id, 5, '0', STR_PAD_LEFT)}}</h3>
+        <h3 class="title">FACTURE N° {{date('y') . str_pad($order->id, 4, '0', STR_PAD_LEFT)}}</h3>
         <div class="row">
             <div class="col-xs-6">
-                <p class="fw-bold">KOKLEM</p>
+                <p class="fw-bold">SAS KOKLEM</p>
                 3 RUE DE PROVENCE<br>
-                94510, La Queue-en-Brie<br>
+                94510, LA QUEUE-EN-BRIE<br>
+                SIRET: 93020115700011<br>
                 contact@koklem.fr<br>
             </div>
             <div class="col-xs-6 header-info">
                 <table style="border:none;">
                     <tr>
-                        <td style="border: none;padding:1px;">N° DE FACTURE</td>
-                        <td style="border: none;padding:1px;">{{date('y') . '-' . str_pad($order->id, 5, '0', STR_PAD_LEFT)}}</td>
+                        <td style="border: none;padding:1px;margin:0;">N° DE FACTURE</td>
+                        <td style="border: none;padding:1px;margin:0;">{{date('y') . str_pad($order->id, 4, '0', STR_PAD_LEFT)}}</td>
                     </tr>
                     <tr>
-                        <td style="border: none;padding:1px;">DATE</td>
-                        <td style="border: none;padding:1px;">{{$order->created_at->format('d/m/Y')}}</td>
+                        <td style="border: none;padding:1px;margin:0;">DATE</td>
+                        <td style="border: none;padding:1px;margin:0;">{{$order->created_at->format('d/m/Y')}}</td>
                     </tr>
                     <tr>
-                        <td style="border: none;padding:1px;">DATE D'ÉCHÉANCE</td>
-                        <td style="border: none;padding:1px;">{{$order->created_at->addDay(30)->format('d/m/Y')}}</td>
+                        <td style="border: none;padding:1px;margin:0;">DATE D'ÉCHÉANCE</td>
+                        <td style="border: none;padding:1px;margin:0;">{{$order->created_at->addDay(30)->format('d/m/Y')}}</td>
                     </tr>
                 </table>
                 {{-- N° DE FACTURE : {{date('y') . '-' . $order->id}}<br>
@@ -98,18 +112,18 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-xs-6"></div>
-            <div class="col-xs-6">
-                <h6>Facturer à</h6>
+        <div class="row" style="margin: 0!important;padding:0!important;">
+            <div class="col-xs-6" style="margin-top: 0!important;padding-top:0!important;"></div>
+            <div class="col-xs-6" style="margin-top: 0!important;padding-top:0!important;">
+                <p style="margin: 0!important;padding:0 0 5px 0 !important;">Facturer à :</p>
                 <p class="fw-bold">{{ $order->client->company }}</p>
                 {{ $order->client->address1 }}<br>
                 {{ $order->client->zip_code . ', ' . $order->client->city }}
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12">
-                <table class="">
+        <div class="row" style="margin: 0!important;padding:0!important;">
+            <div class="col-xs-12"  style="margin: 0!important;padding:0!important;">
+                <table  style="margin: 0!important;padding:0!important;">
                     <thead>
                         <tr>
                             <th>Réf</th>
@@ -132,20 +146,56 @@
                             </tr>
                         @endforeach
                     </tbody>
-                    <tfoot class="fw-bold">
-                        <tr>
-                            <td colspan="5" class="text-right" style="border: none;padding:0;margin:0;">TOTAL H.T</td>
-                            <td class="text-right" style="border: none;padding:0;margin:0;">{{number_format($order->total_ht, 2, ',', ' ')}}€</td>
-                        </tr>
-                        <tr>
-                            <td colspan="5" class="text-right" style="border: none;padding:0;margin:0;">TVA 20%</td>
-                            <td class="text-right" style="border: none;padding:0;margin:0;">{{number_format($order->total_tva, 2, ',', ' ')}}€</td>
-                        </tr>
-                        <tr>
-                            <td colspan="5" class="text-right" style="border: none;padding:0;margin:0;">TOTAL T.T.C</td>
-                            <td class="text-right" style="border: none;padding:0;margin:0;">{{number_format($order->total_ttc, 2, ',', ' ')}}€</td>
-                        </tr>
-                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="row" style="margin: 0!important;padding:0!important;">
+            <div class="col-xs-4" style="margin: 0!important;padding:0!important;">
+                <table style="margin: 0!important;padding:0!important;">
+                    <thead>
+                    <tr>
+                        <th class="small text-right">BASE HT</th>
+                        <th class="small text-right">TAUX</th>
+                        <th class="small text-right">TVA</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="small text-right">{{number_format($order->total_ht, 2, ',', ' ')}}€</td>
+                        <td class="small text-right">20,00%</td>
+                        <td class="small text-right">{{number_format($order->total_tva, 2, ',', ' ')}}€</td>
+                    </tr>
+                    </tbody>         
+                </table>
+            </div>
+            <div class="col-xs-2"></div>
+            <div class="col-xs-5">
+                <table class="total" style="margin: 0!important;padding:0!important;">
+                    <tr>
+                        <td colspan="5" class="text-right" style="border: none;padding:0;margin:0;">TOTAL H.T</td>
+                        <td class="text-right" style="border: none;padding:0;margin:0;">
+                            {{number_format($order->total_ht, 2, ',', ' ')}} €
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right" style="border: none;padding:0;margin:0;">TVA 20%</td>
+                        <td class="text-right" style="border: none;padding:0;margin:0;">
+                            {{number_format($order->total_tva, 2, ',', ' ')}} €
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right" style="border: none;padding:0;margin:0;">TOTAL T.T.C</td>
+                        <td class="text-right" style="border: none;padding:0;margin:0;">
+                            {{number_format($order->total_ttc, 2, ',', ' ')}} €
+                        </td>
+                    </tr>
+                    <tr style="background-color: rgb(9, 163, 78);color:white;font-weight:bold;">
+                        <td colspan="5" class="text-right" style="font-size:14px;">NET À PAYER</td>
+                        <td class="text-right" style="font-size:14px;">
+                            {{number_format($order->total_ttc, 2, ',', ' ')}} €
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -171,6 +221,7 @@
             contact@koklem.fr
         </div>
     </div>
+    <div class="page-number"></div>
 </body>
 
 </html>

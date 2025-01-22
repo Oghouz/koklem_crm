@@ -326,6 +326,8 @@ class OrderController extends Controller
 
         $options = new Options();
         $options->set('isRemoteEnabled', true); // Autoriser les fichiers distants
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
 
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);

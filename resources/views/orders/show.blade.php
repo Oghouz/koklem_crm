@@ -117,7 +117,7 @@
 
     <div class="row mt-3">
         <div class="col-4">
-            <div class="card">
+            <div class="card text-center">
                 <div class="card-header">
                     <h5 class="card-title"><i class="fa fa-shirt"></i> Préparation de T-shirt</h5>
                 </div>
@@ -131,8 +131,8 @@
                         <tbody>
                             @php $totalPrepare = 0 @endphp
                             @foreach ($productsPrepare as $prepareProduct)
-                                <tr class="p-1">
-                                    <td>{{$prepareProduct['color']}}</td>
+                                <tr>
+                                    <td class="p-1">{{$prepareProduct['color']}}</td>
                                     <td class="text-center"><span class="badge bg-dark">{{$prepareProduct['size']}}</span></td>
                                     <td class="text-center fw-bold">{{$prepareProduct['quantity']}}</td>
                                 </tr>
