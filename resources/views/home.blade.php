@@ -198,6 +198,16 @@
                 </div>
             </div>
         </div>
+
+        <div class="mx-n4 px-4 mx-lg-n6 px-lg-6 bg-body-emphasis pt-6 pb-9 border-top">
+            <div class="row g-6">
+                <div class="col-12 col-xl-12">
+                    <div class="me-xl-4">
+                        <div id="echart-stock" style="width: 100%; height: 500px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 @endsection
 
 @section('script')
@@ -418,6 +428,94 @@
 
         // Appliquer les options au graphique
         echartProducts.setOption(echartProductsOption);
+
+        /**
+         *  Echart Stock
+         */ 
+        // Initialisation de l'instance ECharts
+        var echartStock = echarts.init(document.getElementById('echart-stock'));
+
+        // Données récupérées depuis le backend
+        var stockData = @json($stockData); // Assurez-vous que $stockData contient les informations correctes
+
+        // Préparer les catégories (taille + couleur) et les données de stock
+        var categories = [];
+        var seriesData = [];
+
+        stockData.forEach(item => {
+            // Combine taille et couleur pour les catégories
+            categories.push(`${item.size} | ${item.color}`);
+
+            // Ajouter les données avec les couleurs dynamiques basées sur le stock
+            seriesData.push({
+                value: item.stock,
+                itemStyle: {
+                    color: item.stock < 10 ? 'red' : item.stock < 30 ? 'orange' : 'green' // Couleur selon le stock
+                }
+            });
+        });
+
+        // Configuration du graphique
+        var echartStockOption = {
+            title: {
+                text: 'Statistiques du Stock des Produits',
+                subtext: 'Taille, Couleur, et Niveau de Stock',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: function (params) {
+                    // Affiche une info-bulle détaillée
+                    var data = params[0].data;
+                    return `
+                <strong>${categories[params[0].dataIndex]}</strong><br>
+                Stock: ${data.value}
+            `;
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: categories,
+                axisLabel: {
+                    rotate: 45, // Incline les étiquettes pour éviter les chevauchements
+                    formatter: function (value) {
+                        return value.length > 30 ? value.substring(0, 30) + '...' : value; // Tronque si trop long
+                    }
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Quantité en Stock',
+                axisLabel: {
+                    formatter: '{value}'
+                }
+            },
+            series: [
+                {
+                    name: 'Stock',
+                    type: 'bar',
+                    data: seriesData,
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: '{c}' // Affiche la valeur brute
+                    }
+                }
+            ],
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '10%',
+                containLabel: true
+            }
+        };
+
+        // Appliquer les options au graphique
+        echartStock.setOption(echartStockOption);
+
 
 
 

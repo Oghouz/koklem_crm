@@ -42,6 +42,7 @@ class HomeController extends Controller
 
         $designsData = $this->getDesignsData();
         $productsData = $this->getProductsData();
+        $stockData = $this->getStockData();
 
         return view('home', [
             'clients' => $clients,
@@ -50,6 +51,7 @@ class HomeController extends Controller
             'salesData' => $salesData,
             'designsData' => $designsData,
             'productsData' => $productsData,
+            'stockData' => $stockData
         ]);
     }
 
@@ -138,6 +140,26 @@ class HomeController extends Controller
         }
 
         return $data;
+    }
+
+    public function getStockData()
+    {
+        // Récupérer les produits avec leur couleur
+        $products = Product::with('color')
+            ->select('id', 'name', 'size', 'color_id', 'stock') // Colonnes nécessaires
+            ->get();
+
+        // Préparer les données pour le graphique
+        $stockData = $products->map(function ($product) {
+            return [
+                'name' => $product->name,
+                'size' => $product->size,
+                'color' => $product->color ? $product->color->name : 'Inconnu',
+                'stock' => $product->stock
+            ];
+        });
+
+        return $stockData;
     }
 
 }
