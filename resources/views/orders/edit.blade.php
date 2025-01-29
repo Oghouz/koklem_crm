@@ -28,7 +28,7 @@
     <form action="{{ route('order.update', $order->id) }}" method="POST">
         <div class="row mb-3">
             <div class="col-sm-6">
-                <a href="{{ route('order.index') }}" class="btn btn-secondary">Retour à la liste des commandes</a>
+                <a href="{{ route('order.show', $order) }}" class="btn btn-subtle-secondary me-1 mb-1">Retour</a>
             </div>
             <div class="col-sm-6">
                 <button type="submit" class="btn btn-primary float-end">Mettre à jour la commande</button>
@@ -239,7 +239,6 @@
 
 @section('script')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.8/axios.min.js" integrity="sha512-v8+bPcpk4Sj7CKB11+gK/FnsbgQ15jTwZamnBf/xDmiQDcgOIYufBo6Acu1y30vrk8gg5su4x0CG3zfPaq5Fcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Handle image click to open modal

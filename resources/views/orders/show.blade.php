@@ -19,12 +19,16 @@
             <h1>Commande #{{ $order->id }} ({{ $order->num }})</h1>
         </div>
         <div class="col text-end">
-            <a href="{{ route('order.generatePDF', ['id' => $order->id, 'type' => 'bl']) }}" class="btn btn-sm btn-secondary" target="_blank">
-                <i class="fa fa-file-pdf"></i> Générer le Bon de Livraison
+            <a href="{{ route('order.generatePDF', ['id' => $order->id, 'type' => 'bl']) }}" class="btn btn-sm btn-outline-info" target="_blank">
+                <i class="fa fa-file-pdf"></i> Bon de Livraison
             </a>
-            <a href="{{ route('order.generatePDF', ['id' => $order->id, 'type' => 'facture']) }}" class="btn btn-sm btn-warning" target="_blank">
-                <i class="fa fa-file-pdf"></i> Générer la Facture
-            </a>
+            @if(!$order->invoice_id)
+                <button class="btn btn-success" onclick="generateInvoice()"><i class="fa fa-file-invoice"></i> Facturer la vente</button>
+            @else
+                <a class="btn btn-outline-success" href="{{route('invoice.pdf.download', $order->invoice_id)}}" target="_blank">
+                    <i class="fa fa-file-invoice"></i> Télécharger la facture
+                </a>
+            @endif
         </div>
     </div>
     <div class="row mt-3">
@@ -32,7 +36,7 @@
         <div class="col-md-4">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h3 class="card-title">CLEINT</h3>
+                    <h3 class="card-title">CLIENT</h3>
                     <b>{{$order->client->company}}</b><br>
                     {{$order->client->address1}}<br>
                     {{$order->client->zip_code}} {{$order->client->city}}<br>
@@ -136,7 +140,7 @@
                                     <td class="text-center"><span class="badge bg-dark">{{$prepareProduct['size']}}</span></td>
                                     <td class="text-center fw-bold">{{$prepareProduct['quantity']}}</td>
                                 </tr>
-                                @php $totalPrepare+= $prepareProduct['quantity'] @endphp
+                                @php $totalPrepare += $prepareProduct['quantity'] @endphp
                             @endforeach
                         </tbody>
                         <tfoot>
@@ -165,6 +169,9 @@
 @endsection
 
 @section('script')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.8/axios.min.js"
+    integrity="sha512-v8+bPcpk4Sj7CKB11+gK/FnsbgQ15jTwZamnBf/xDmiQDcgOIYufBo6Acu1y30vrk8gg5su4x0CG3zfPaq5Fcg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Handle image click to open modal
@@ -177,5 +184,78 @@
             });
         });
     });
+
+    function generateInvoice() {
+        let orderStatus = '{{$order->status}}'; // Récupère le statut de la commande à partir de Blade
+        if (orderStatus !== '2' && orderStatus !== '3') {
+            Swal.fire({
+                icon: "warning",
+                title: "Attention",
+                text: "Veuillez passer la commande en statut 'Validée' ou 'Livrée'.",
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: "Confirmation de la facturation",
+            text: "Voulez-vous créer la facture ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Confirmer",
+            cancelButtonText: "Annuler",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Affichage du chargement
+                Swal.fire({
+                    title: 'Création de la facture en cours...',
+                    text: 'Veuillez patienter, la facture est en train de se générer.',
+                    icon: 'info',
+                    allowOutsideClick: false,  // Empêche de fermer la fenêtre pendant le chargement
+                    showConfirmButton: false,  // Cache le bouton de confirmation
+                    didOpen: () => {
+                        Swal.showLoading();  // Affiche le spinner de chargement
+                    }
+                });
+
+                // Requête AJAX avec axios
+                axios.post('/invoice', {
+                    order_id: '{{$order->id}}',  // L'ID de la commande provenant de Blade
+                    _token: '{{ csrf_token() }}'  // Ajout du token CSRF pour sécuriser la requête
+                }).then((response) => {
+                    // Vérification du retour serveur
+                    console.log(response)
+                    if (response.data.status === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Facture générée avec succès',
+                            text: 'La facture a été créée avec succès.',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Optionnel : Redirection vers la page des factures après la création
+                            window.location.reload(); // Modifiez cette URL selon votre besoin
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erreur',
+                            text: 'Une erreur est survenue lors de la création de la facture.',
+                            confirmButtonText: 'Essayer à nouveau'
+                        });
+                    }
+                }).catch((error) => {
+                    // Gestion des erreurs réseau ou autres
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur de communication',
+                        text: 'Une erreur est survenue lors de la communication avec le serveur.',
+                        confirmButtonText: 'Réessayer'
+                    });
+                    console.error('Erreur :', error);  // Log de l'erreur pour débogage
+                });
+            }
+        });
+    }
+
 </script>
 @endsection

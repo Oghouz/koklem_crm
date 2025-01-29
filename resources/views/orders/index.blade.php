@@ -15,49 +15,52 @@
     <div id="orderTable" data-list='{"valueNames":["order","total","customer","payment_status","fulfilment_status","delivery_type","date"],"page":10,"pagination":true}'>
     <div class="mb-4">
         <div class="row g-3">
-        <div class="col-auto">
-            <div class="search-box">
-            <form class="position-relative">
-                <input class="form-control search-input search" name="search" type="search" placeholder="Recherche..." aria-label="Search" value="{{Request::get('search')}}" />
-                <span class="fas fa-search search-box-icon"></span>
-            </form>
-            </div>
-        </div>
-        <div class="col-auto scrollbar overflow-hidden-y flex-grow-1">
-            <div class="btn-group position-static" role="group">
-                <div class="btn-group position-static text-nowrap" role="group">
-                    <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown"
-                        data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
-                        Statut Commande<span class="fas fa-angle-down ms-2"></span></button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        @foreach (App\Models\Order::getStatusLabel() as $i => $orderStatus)
-                            <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_status' => $i])}}">{{$orderStatus}}</a></li>
-                        @endforeach
-                        <li>
-                            <hr class="dropdown-divider" />
-                        </li>
-                        <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_status' => ''])}}">Tous</a></li>
-                    </ul>
-                </div>
-                <div class="btn-group position-static text-nowrap" role="group">
-                    <button class="btn btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
-                        Statut Paiement<span class="fas fa-angle-down ms-2"></span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_paid' => 1])}}">Payée</a></li>
-                        <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_paid' => 0])}}">Non Payée</a></li>
-                        <li>
-                            <hr class="dropdown-divider" />
-                        </li>
-                        <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_paid' => ''])}}">Tous</a></li>
-                    </ul>
+            <div class="col-auto">
+                <div class="search-box">
+                <form class="position-relative">
+                    <input class="form-control search-input search" name="search" type="search" placeholder="Recherche..." aria-label="Search" value="{{Request::get('search')}}" />
+                    <span class="fas fa-search search-box-icon"></span>
+                </form>
                 </div>
             </div>
-        </div>
-        <div class="col-auto">
-            <button class="btn btn-link text-body me-4 px-0"><span class="fa-solid fa-file-export fs-9 me-2"></span>Export</button>
-            <a href="{{route('order.create')}}" class="btn btn-primary"><span class="fas fa-plus me-2"></span>Nouvelle commande</a>
-        </div>
+            <div class="col-auto scrollbar overflow-hidden-y flex-grow-1">
+                <div class="btn-group position-static" role="group">
+                    <div class="btn-group position-static text-nowrap" role="group">
+                        <button class="btn btn-sm btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown"
+                            data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
+                            Statut Commande<span class="fas fa-angle-down ms-2"></span></button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            @foreach (App\Models\Order::getStatusLabel() as $i => $orderStatus)
+                                <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_status' => $i])}}">{{$orderStatus}}</a></li>
+                            @endforeach
+                            <li>
+                                <hr class="dropdown-divider" />
+                            </li>
+                            <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_status' => ''])}}">Tous</a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group position-static text-nowrap" role="group">
+                        <button class="btn btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
+                            Statut Paiement<span class="fas fa-angle-down ms-2"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_paid' => 1])}}">Payée</a></li>
+                            <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_paid' => 0])}}">Non Payée</a></li>
+                            <li>
+                                <hr class="dropdown-divider" />
+                            </li>
+                            <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_paid' => ''])}}">Tous</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-auto">
+                {{-- <button class="btn btn-link text-body me-4 px-0"><span class="fa-solid fa-file-export fs-9 me-2"></span>Export</button> --}}
+                <a href="{{route('order.create')}}" class="btn btn-outline-primary"><span class="fas fa-plus me-2"></span>Nouvelle commande</a>
+                <button class="btn btn-outline-success" onclick="generateInvoice()">
+                    <span class="fas fa-file-invoice"></span> Générer le(s) facture(s)
+                </button>
+            </div>
         </div>
     </div>
     <div class="mx-n4 px-4 mx-lg-n6 px-lg-6 bg-body-emphasis border-top border-bottom border-translucent position-relative top-1">
@@ -65,10 +68,10 @@
         <table class="table table-sm fs-9 mb-0">
             <thead>
             <tr>
-                <th class="white-space-nowrap fs-9 align-middle ps-0">
-                <div class="form-check mb-0 fs-8">
-                    <input class="form-check-input" id="checkbox-bulk-order-select" type="checkbox" data-bulk-select='{"body":"order-table-body"}' />
-                </div>
+                <th class="white-space-nowrap fs-9 align-middle ps-0 ps-2">
+                    <div class="form-check mb-0 fs-8">
+                        <input class="form-check-input" id="checkbox-all-order-select" type="checkbox"  />
+                    </div>
                 </th>
                 <th class="sort white-space-nowrap align-middle pe-3" scope="col" data-sort="order">
                     @sortablelink('id', 'N°')
@@ -83,7 +86,7 @@
                     @sortablelink('paid', 'PAIEMENT')
                 </th>
                 <th class="sort align-middle text-start" scope="col" data-sort="delivery_type">
-                    @sortablelink('delivery_date', 'LIVRAISON')
+                    @sortablelink('invoice_id', 'FACTURÉE')
                 </th>
                 <th class="sort align-middle text-end" scope="col" data-sort="total">
                     @sortablelink('total_ttc', 'TOTAL')
@@ -95,11 +98,18 @@
             </thead>
             <tbody class="list" id="order-table-body">
                 @foreach($orders as $order)
-                    <tr class="hover-actions-trigger btn-reveal-trigger position-static">
-                        <td class="fs-9 align-middle px-0 py-3">
-                        <div class="form-check mb-0 fs-8">
-                            <input class="form-check-input" type="checkbox" />
-                        </div>
+                    <tr class="hover-actions-trigger btn-reveal-trigger position-static" id="line-{{$order->id}}">
+                        <td class="fs-9 align-middle px-0 py-3 ps-2">
+                            <div class="form-check mb-0 fs-8">
+                                @if($order->invoice_id)
+                                    <i class="form-check-input fa fa-check text-success"></i>
+                                @else
+                                    <input class="form-check-input line-checkbox" 
+                                    type="checkbox" 
+                                    value="{{$order->id}}"  
+                                    onchange="selectLine(this, '{{$order->id}}')" />
+                                @endif
+                            </div>
                         </td>
                         <td class="order align-middle white-space-nowrap py-0">
                             <a class="fw-semibold" href="{{route('order.show', $order)}}">#{{$order->id}}</a></td>
@@ -133,7 +143,11 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="delivery_type align-middle white-space-nowrap text-body fs-9 text-start"></td>
+                        <td class="delivery_type align-middle white-space-nowrap text-body fs-9 text-start">
+                            @if($order->invoice_id)
+                            <a href="{{route('invoice.show', $order->invoice_id)}}">{{$order->invoice_id}}</a>
+                            @endif
+                        </td>
                         <td class="total align-middle text-end fw-semibold text-body-highlight">{{number_format($order->total_ttc, 2, ',', ' ')}}€</td>
                         <td class="date align-middle white-space-nowrap text-body-tertiary fs-9 ps-4 text-end">{{$order->created_at->format('d/m/Y')}}</td>
                     </tr>
@@ -165,4 +179,115 @@
     </div>
 </div>
 
+@endsection
+
+@section('script')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.8/axios.min.js"
+    integrity="sha512-v8+bPcpk4Sj7CKB11+gK/FnsbgQ15jTwZamnBf/xDmiQDcgOIYufBo6Acu1y30vrk8gg5su4x0CG3zfPaq5Fcg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+
+    $('#checkbox-all-order-select').on('click', ()=> {
+        console.log('TEST')
+    });
+
+function selectLine(elem, line_id)
+{
+    let isChecked = $(elem).is(':checked');
+    if(isChecked) {
+        $('#line-'+line_id).addClass("bg-primary-subtle")
+    } else {
+        $('#line-' + line_id).removeClass("bg-primary-subtle")
+    }
+}
+
+function generateInvoice()
+{
+    let url = 'invoice/multipleInvoiceStore';
+    let checkboxs = $('.line-checkbox');
+    let selectedOders = [];
+
+    checkboxs.each((i,item) => {
+        let isChecked = $(item).is(':checked');
+        if(isChecked) {
+            selectedOders.push($(item).val())
+        }
+    })
+
+    if(!selectedOders.length) {
+        Swal.fire({
+            title: "Aucune commande n'a été sélectionnée!",
+            icon: "warning",
+            draggable: true
+        });
+        return;
+    }
+
+    let orders = selectedOders.join(', ')
+    Swal.fire({
+        icon: "info",
+        title: "Confirmation",
+        html: `
+            <p>Commandes sélectionnée: <b>`+selectedOders.length+`</b></p>
+            `+orders+`
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Confirmer",
+        cancelButtonText: "Annuler",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            
+            Swal.fire({
+                title: 'Création de la facture en cours...',
+                text: 'Veuillez patienter, la facture est en train de se générer.',
+                icon: 'info',
+                allowOutsideClick: false,  // Empêche de fermer la fenêtre pendant le chargement
+                showConfirmButton: false,  // Cache le bouton de confirmation
+                didOpen: () => {
+                    Swal.showLoading();  // Affiche le spinner de chargement
+                }
+            });
+            
+            // Requête AJAX avec axios
+            let url = "{{route('invoice.sotre.multiple')}}"
+            axios.post(url, {
+                orderIds: selectedOders,  // L'ID de la commande provenant de Blade
+                _token: '{{ csrf_token() }}'  // Ajout du token CSRF pour sécuriser la requête
+            }).then((response) => {
+                // Vérification du retour serveur
+                console.log(response)
+                if (response.data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Facture générée avec succès',
+                        text: 'La facture a été créée avec succès.',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Optionnel : Redirection vers la page des factures après la création
+                        window.location.reload(); // Modifiez cette URL selon votre besoin
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        text: 'Une erreur est survenue lors de la création de la facture.',
+                        confirmButtonText: 'Essayer à nouveau'
+                    });
+                }
+            }).catch((error) => {
+                // Gestion des erreurs réseau ou autres
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur de communication',
+                    text: error.response.data.error,
+                    confirmButtonText: 'Réessayer'
+                });
+                console.error('Erreur :', error.response.data.error);  // Log de l'erreur pour débogage
+            });
+        }
+    });
+    console.log(selectedOders);
+}
+
+</script>
 @endsection

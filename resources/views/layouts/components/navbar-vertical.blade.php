@@ -34,25 +34,37 @@
                     </div>
                 </a>
                 <div class="parent-wrapper label-1">
-                <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-CMD">
-                    <li class="collapsed-nav-item-title d-none">Commandes
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{route('order.index')}}">
-                            <div class="d-flex align-items-center">
-                                <span class="nav-link-text">Liste des commandes</span>
-                            </div>
-                        </a>
-                    <!-- more inner pages-->
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{route('order.create')}}">
-                            <div class="d-flex align-items-center">
-                                <span class="nav-link-text">Nouvelle commande</span>
-                            </div>
-                        </a>
-                    </li>
-                </ul>
+                    <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-CMD">
+                        <li class="collapsed-nav-item-title d-none">Commandes
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{route('order.index')}}">
+                                <div class="d-flex align-items-center">
+                                    <span class="nav-link-text">Liste des commandes</span>
+                                </div>
+                            </a>
+                        <!-- more inner pages-->
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{route('order.create')}}">
+                                <div class="d-flex align-items-center">
+                                    <span class="nav-link-text">Nouvelle commande</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="nav-item-wrapper">
+                    <a class="nav-link label-1" href="{{route('invoice.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                        <div class="d-flex align-items-center">
+                            <span class="nav-link-icon">
+                                <span data-feather="file"></span>
+                            </span>
+                            <span class="nav-link-text-wrapper">
+                                <span class="nav-link-text">Factures</span>
+                            </span>
+                        </div>
+                    </a>
                 </div>
             </div>
             <!-- parent pages-->

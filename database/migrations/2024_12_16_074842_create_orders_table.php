@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('num');
             $table->string('status');
             $table->unsignedBigInteger('client_id')->nullable();
+            $table->unsignedBigInteger('invoice_id')->nullable();
             $table->boolean('paid')->default(false);
             $table->string('payment_method')->nullable();
             $table->string('shipping_method')->nullable();

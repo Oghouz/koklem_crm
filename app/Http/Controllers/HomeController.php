@@ -31,15 +31,7 @@ class HomeController extends Controller
         $orders = Order::all();
         $products = Product::all();
 
-        $sales = $this->getSalesData(2025);
-
-        // Transformation des données pour Echarts
-        $salesData = [
-            'dates' => array_column($sales, 'date'),
-            'totals' => array_column($sales, 'total'),
-            'ventes' => array_column($sales, 'vente')
-        ];
-
+        $salesData = $this->getSalesDataLast12Months();
         $designsData = $this->getDesignsData();
         $productsData = $this->getProductsData();
         $stockData = $this->getStockData();
@@ -55,20 +47,27 @@ class HomeController extends Controller
         ]);
     }
 
-    public function getSalesData($year = "2025")
+    public function getSalesDataLast12Months()
     {
-        // Récupérer les ventes et totaux groupés par mois pour l'année 2025
+        // Calculer la plage de dates pour les 12 derniers mois
+        $endDate = now(); // Date actuelle
+        $startDate = now()->subMonths(12)->startOfMonth(); // Début des 12 derniers mois
+
+        // Récupérer les ventes et totaux groupés par mois pour les 12 derniers mois
         $sales = Order::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(total_ttc) as total, COUNT(*) as vente')
-            ->whereYear('created_at', $year)
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy(DB::raw('YEAR(created_at), MONTH(created_at)'))
             ->orderBy(DB::raw('YEAR(created_at), MONTH(created_at)'))
             ->get();
 
-        // Initialiser le tableau des données de ventes pour tous les mois
+        // Initialiser le tableau des données de ventes pour les 12 derniers mois
         $salesData = [];
-        for ($month = 1; $month <= 12; $month++) {
+        for ($date = $startDate; $date->lte($endDate); $date->addMonth()) {
+            $year = $date->year;
+            $month = $date->month;
             $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT); // Mois au format "01", "02", etc.
-            $salesData[$month] = [
+
+            $salesData["$year-$monthKey"] = [
                 'date' => "$year-$monthKey",
                 'total' => 0,  // Valeur par défaut
                 'vente' => 0,  // Valeur par défaut
@@ -77,15 +76,24 @@ class HomeController extends Controller
 
         // Mettre à jour les données avec les résultats réels de la base de données
         foreach ($sales as $sale) {
-            $salesData[$sale->month]['total'] = $sale->total;
-            $salesData[$sale->month]['vente'] = $sale->vente;
+            $monthKey = str_pad($sale->month, 2, '0', STR_PAD_LEFT);
+            $salesData["{$sale->year}-$monthKey"]['total'] = $sale->total;
+            $salesData["{$sale->year}-$monthKey"]['vente'] = $sale->vente;
         }
 
-        // Réindexer le tableau (si nécessaire) et transformer en liste pour le front-end
+        // Réindexer le tableau et transformer en liste pour le front-end
         $salesData = array_values($salesData);
 
-        return $salesData;
+        // Transformation des données pour Echarts
+        $results = [
+            'dates' => array_column($salesData, 'date'),
+            'totals' => array_column($salesData, 'total'),
+            'ventes' => array_column($salesData, 'vente')
+        ];
+
+        return $results;
     }
+
 
     public function getDesignsData()
     {

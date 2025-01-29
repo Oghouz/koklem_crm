@@ -120,8 +120,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                     <div>
-                        <h5 class="mb-2">Top coupons</h5>
-                        <h6 class="text-body-tertiary">Last 7 days</h6>
+                        <h5 class="mb-2">Produits</h5>
                     </div>
                     </div>
                     <div class="pb-4 pt-3">
@@ -515,6 +514,15 @@
 
         // Appliquer les options au graphique
         echartStock.setOption(echartStockOption);
+        echartStock.on('click', function (params) {
+            // Récupérer l'ID du produit à partir des données
+            var productId = params.data.product_id;
+
+            // Rediriger vers la page produit
+            if (productId) {
+                window.location.href = `/product/${productId}`; // Route Laravel vers la page du produit
+            }
+        });
 
 
 

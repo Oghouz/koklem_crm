@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('phone1')->nullable();
             $table->string('phone2')->nullable();
             $table->string('phone3')->nullable();
+            $table->string('email')->nullable();
             $table->string('siret')->nullable();
             $table->string('tva_number')->nullable();
             $table->string('iban')->nullable();

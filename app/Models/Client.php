@@ -23,6 +23,7 @@ class Client extends Model
         'phone1',
         'phone2',
         'phone3',
+        'email',
         'siret',
         'tva_number',
         'iban',

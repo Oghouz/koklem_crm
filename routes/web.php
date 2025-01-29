@@ -31,13 +31,22 @@ Route::middleware('auth')->group(function () {
      *  Products
      */
     Route::resource('product', ProductController::class);
+
+    /**
+     * Design
+     */
     Route::resource('design', DesignController::class);
+
+    /**
+     * Client
+     */
     Route::resource('client', ClientController::class);
 
-
+    /**
+     * Stock
+     */
     Route::resource('stock', StockController::class);
-    Route::resource('invoice', InvoiceController::class);
-
+    
     /**
      * Home page statistic
      */
@@ -57,6 +66,13 @@ Route::middleware('auth')->group(function () {
         Route::put('update/{order_line_id}', [OrderController::class, 'updateOrderLine'])->name('orderLine.update');
         Route::delete('delete/{order_line_id}', [OrderController::class, 'deleteOrderLine'])->name('orderLine.delete');
     });
+
+    /**
+     * Invoice
+     */
+    Route::resource('invoice', InvoiceController::class);
+    Route::get('invoice/pdf/download/{key}', [InvoiceController::class, 'generateInvoicePdf'])->name('invoice.pdf.download');
+    Route::post('invoice/multipleInvoiceStore', [InvoiceController::class, 'multipleInvoiceStore'])->name('invoice.sotre.multiple');
 
 
 });

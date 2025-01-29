@@ -10,6 +10,7 @@ class Order extends Model
         'num',
         'status',
         'client_id',
+        'invoice_id',
         'paid',
         'payment_method',
         'shipping_method',
@@ -44,6 +45,11 @@ class Order extends Model
     public function orderLines()
     {
         return $this->hasMany(OrderLine::class, 'order_id');
+    }
+
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class, 'order_id');
     }
 
     // Si vous avez aussi besoin de l'utilisateur qui a créé ou mis à jour la commande :
