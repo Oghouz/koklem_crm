@@ -227,7 +227,7 @@ class InvoiceController extends Controller
                         'design_id' => $line->design_id,
                         'reference' => $line->design->reference,
                         'name' => $line->design->name,
-                        'size' => $line->size,
+                        'size' => $line->product_size,
                         'quantity' => $line->quantity,
                         'price' => $line->product_price,
                     ]);

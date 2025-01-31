@@ -79,20 +79,20 @@
                 <th class="sort align-middle ps-8" scope="col" data-sort="customer">
                     @sortablelink('client_id', 'CLIENT')
                 </th>
+                <th class="sort align-middle pe-0" scope="col" data-sort="date">
+                    @sortablelink('created_at', 'DATE')
+                </th>
                 <th class="sort align-middle text-start pe-3" scope="col" data-sort="fulfilment_status">
                     @sortablelink('status', 'STATUT')
                 </th>
                 <th class="sort align-middle pe-3" scope="col" data-sort="payment_status">
                     @sortablelink('paid', 'PAIEMENT')
                 </th>
-                <th class="sort align-middle text-start" scope="col" data-sort="delivery_type">
+                <th class="sort align-middle text-center" scope="col" data-sort="delivery_type">
                     @sortablelink('invoice_id', 'FACTURÉE')
                 </th>
                 <th class="sort align-middle text-end" scope="col" data-sort="total">
                     @sortablelink('total_ttc', 'TOTAL')
-                </th>
-                <th class="sort align-middle text-end pe-0" scope="col" data-sort="date">
-                    @sortablelink('created_at', 'DATE')
                 </th>
             </tr>
             </thead>
@@ -112,7 +112,8 @@
                             </div>
                         </td>
                         <td class="order align-middle white-space-nowrap py-0">
-                            <a class="fw-semibold" href="{{route('order.show', $order)}}">#{{$order->id}}</a></td>
+                            <a class="fw-semibold" href="{{route('order.show', $order)}}">#{{$order->id}}</a>
+                        </td>
                         <td class="customer align-middle white-space-nowrap ps-8">
                             <a class="d-flex align-items-center text-body" href="{{route('client.show', $order->client)}}">
                                 <div class="avatar avatar-m">
@@ -123,12 +124,11 @@
                                 <h6 class="mb-0 ms-3 text-body">{{$order->client->company}}</h6>
                             </a>
                         </td>
+                        <td class="date align-middle white-space-nowrap text-body-tertiary fs-9 fw-bold">
+                            {{$order->created_at->format('d/m/Y')}}
+                        </td>
                         <td class="fulfilment_status align-middle white-space-nowrap text-start fw-bold text-body-tertiary">
-                            <span class="badge badge-phoenix fs-10 badge-phoenix-primary">
-                                <span class="badge-label">
-                                    {!! App\Models\Order::getStatusLabel($order->status) !!}
-                                </span>
-                            </span>
+                            {!! App\Models\Order::getStatusBadge($order->status) !!}
                         </td>
                         <td class="payment_status align-middle white-space-nowrap text-start fw-bold text-body-tertiary">
                             @if($order->paid)
@@ -143,13 +143,12 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="delivery_type align-middle white-space-nowrap text-body fs-9 text-start">
+                        <td class="delivery_type align-middle white-space-nowrap text-body fs-9 text-center">
                             @if($order->invoice_id)
-                            <a href="{{route('invoice.show', $order->invoice_id)}}">{{$order->invoice_id}}</a>
+                                <i class="fa fa-check-circle text-success"></i>
                             @endif
                         </td>
                         <td class="total align-middle text-end fw-semibold text-body-highlight">{{number_format($order->total_ttc, 2, ',', ' ')}}€</td>
-                        <td class="date align-middle white-space-nowrap text-body-tertiary fs-9 ps-4 text-end">{{$order->created_at->format('d/m/Y')}}</td>
                     </tr>
                 @endforeach
             </tbody>
