@@ -11,6 +11,7 @@
             margin: 5px;
             font-size: 12px;
         }
+
         body {
             margin-bottom: 35px;
         }
@@ -28,6 +29,7 @@
         .fw-bold {
             font-weight: bold;
         }
+
         .title {
             color: rgb(9, 163, 78);
             margin: 0;
@@ -35,6 +37,7 @@
             font-weight: bold;
             font-size: 30px;
         }
+
         .header-info {
             border-radius: 3px;
             background-color: rgb(230, 230, 230);
@@ -43,32 +46,36 @@
             width: 300px;
             border-bottom: 3px solid rgb(9, 163, 78);
         }
+
         .footer {
-            position: absolute; /* Remplacez fixed par absolute si nécessaire */
-            bottom: 0; 
-            left: 0; 
+            position: fixed;
+            bottom: 0;
+            left: 0;
             right: 0;
-            height: 35px; 
+            height: 35px;
             padding: 8px;
             font-size: 9px !important;
             line-height: 12px;
-            border-top: 1px solid #ccc; /* Ajoutez une bordure pour différencier */
+            border-top: 1px solid #ccc;
             text-align: center;
         }
+
         table {
             width: 100%;
             border: 1px solid rgb(49, 49, 49);
         }
+
         thead {
             background-color: rgb(49, 49, 49);
             border: 1px solid rgb(49, 49, 49);
             color: white;
         }
-        th, td {
-            /*border-bottom: 1px solid #888888;*/
-            /*border-right: 1px solid #888888;*/
+
+        th,
+        td {
             padding: 3px 5px !important;
         }
+
         .page-number:after {
             content: counter(page) "/" counter(pages);
             position: absolute;
@@ -77,7 +84,6 @@
             font-size: 9px;
             color: #555;
         }
-
     </style>
 </head>
 
@@ -107,9 +113,6 @@
                         <td style="border: none;padding:1px;margin:0;">{{$invoice->due_date}}</td>
                     </tr>
                 </table>
-                {{-- N° DE FACTURE : {{date('y') . '-' . $order->id}}<br>
-                DATE : {{$order->created_at->format('d/m/Y')}}<br>
-                DATE D'ÉCHÉANCE : {{$order->created_at->addDay(30)->format('d/m/Y')}}<br> --}}
             </div>
         </div>
 
@@ -123,11 +126,12 @@
             </div>
         </div>
         <div class="row" style="margin: 0!important;padding:0!important;">
-            <div class="col-xs-12"  style="margin: 0!important;padding:0!important;">
-                <table  style="margin: 0!important;padding:0!important;">
+            <div class="col-xs-12" style="margin: 0!important;padding:0!important;">
+                <table style="margin: 0!important;padding:0!important;">
                     <thead>
                         <tr>
-                            @if(!$type)<th>Réf</th>@endif
+                            @if(!$type)
+                            <th>Réf</th>@endif
                             <th>Désignation</th>
                             <th class="text-center">Taille</th>
                             <th class="text-center">Quantité</th>
@@ -138,12 +142,14 @@
                     <tbody>
                         @foreach($finalLines as $line)
                             <tr>
-                                @if(!$type)<td class="small">{{ $line['reference'] }}</td>@endif
+                                @if(!$type)
+                                <td class="small">{{ $line['reference'] }}</td>@endif
                                 <td class="small">{{ $line['name'] }}</td>
                                 <td class="text-center small">{{ $line['size'] }}</td>
                                 <td class="text-center fw-bold">{{ $line['quantity'] }}</td>
                                 <td class="text-right small">{{ number_format($line['price'], 2, ',', ' ') }}€</td>
-                                <td class="text-right small">{{ number_format(($line['quantity'] * $line['price']), 2, ',', ' ') }}€</td>
+                                <td class="text-right small">
+                                    {{ number_format(($line['quantity'] * $line['price']), 2, ',', ' ') }}€</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -155,19 +161,19 @@
             <div class="col-xs-4" style="margin: 0!important;padding:0!important;">
                 <table style="margin: 0!important;padding:0!important;">
                     <thead>
-                    <tr>
-                        <th class="small text-right">BASE HT</th>
-                        <th class="small text-right">TAUX</th>
-                        <th class="small text-right">TVA</th>
-                    </tr>
+                        <tr>
+                            <th class="small text-right">BASE HT</th>
+                            <th class="small text-right">TAUX</th>
+                            <th class="small text-right">TVA</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td class="small text-right">{{number_format($invoice->total_ht, 2, ',', ' ')}}€</td>
-                        <td class="small text-right">20,00%</td>
-                        <td class="small text-right">{{number_format($invoice->total_tva, 2, ',', ' ')}}€</td>
-                    </tr>
-                    </tbody>         
+                        <tr>
+                            <td class="small text-right">{{number_format($invoice->total_ht, 2, ',', ' ')}}€</td>
+                            <td class="small text-right">20,00%</td>
+                            <td class="small text-right">{{number_format($invoice->total_tva, 2, ',', ' ')}}€</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             <div class="col-xs-2"></div>
@@ -200,12 +206,6 @@
                 </table>
             </div>
         </div>
-    
-        {{-- <div class="row">
-            <div class="col-xs-12">
-                <p class="text-center small"><i>NOUS VOUS REMERCIONS DE VOTRE CONFIANCE.</i></p>
-            </div>
-        </div> --}}
 
         <div class="row">
             <div class="col-xs-12">
@@ -217,11 +217,24 @@
 
         <div class="footer">
             KOKLEM SAS au capital de 12 000€ Siège social : 3 Rue de Provence, 94510 La Queue-en-Brie, France <br>
-            N° SIRET: 93020115700011 / RSC Creteil B 930 201 157 / APE: 2198 / N° TVA Intracommunautaire : FR07930201157 / Email:
+            N° SIRET: 93020115700011 / RSC Creteil B 930 201 157 / APE: 2198 / N° TVA Intracommunautaire : FR07930201157
+            / Email:
             contact@koklem.fr
         </div>
     </div>
-    <div class="page-number"></div>
+    <script type="text/php">
+        if (isset($pdf)) {
+            $pdf->page_script('
+                $font = $fontMetrics->get_font("Arial, Helvetica, sans-serif", "normal");
+                $size = 8;
+                $pageText = "Page " . $PAGE_NUM . " / " . $PAGE_COUNT;
+                $y = 15;
+                $x = 520;
+                $pdf->text($x, $y, $pageText, $font, $size);
+            ');
+        }
+    </script>
 </body>
+
 
 </html>

@@ -271,6 +271,7 @@ class InvoiceController extends Controller
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
+        $dompdf->add_info("Title", "Facture N° ".$invoice->invoice_num);
 
         // Nom du fichier
         $fileName = 'Facture_'.$invoice->invoice_num . '.pdf';
