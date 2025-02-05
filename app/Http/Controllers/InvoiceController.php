@@ -260,7 +260,7 @@ class InvoiceController extends Controller
         }
 
         // Charger la vue correspondante pour le PDF
-        $html = view('invoices.pdf', compact('invoice', 'finalLines'))->render();
+        $html = view('invoices.pdf', compact('invoice', 'finalLines', 'type'))->render();
 
         $options = new Options();
         $options->set('isRemoteEnabled', true); // Autoriser les fichiers distants

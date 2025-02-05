@@ -6,7 +6,7 @@
     RewriteEngine On
 
     # Empêcher l'indexation par les moteurs de recherche
-    Header set X-Robots-Tag "noindex, nofollow"
+    #Header set X-Robots-Tag "noindex, nofollow"
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

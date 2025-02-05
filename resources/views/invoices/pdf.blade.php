@@ -127,7 +127,7 @@
                 <table  style="margin: 0!important;padding:0!important;">
                     <thead>
                         <tr>
-                            @if(request('grouped'))<th>Réf</th>@endif
+                            @if(!$type)<th>Réf</th>@endif
                             <th>Désignation</th>
                             <th class="text-center">Taille</th>
                             <th class="text-center">Quantité</th>
@@ -138,7 +138,7 @@
                     <tbody>
                         @foreach($finalLines as $line)
                             <tr>
-                                @if(request('grouped'))<td class="small">{{ $line['reference'] }}</td>@endif
+                                @if(!$type)<td class="small">{{ $line['reference'] }}</td>@endif
                                 <td class="small">{{ $line['name'] }}</td>
                                 <td class="text-center small">{{ $line['size'] }}</td>
                                 <td class="text-center fw-bold">{{ $line['quantity'] }}</td>
