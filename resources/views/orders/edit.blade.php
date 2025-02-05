@@ -173,10 +173,41 @@
             </div>
         </div>
         <div class="mt-3 mb-3">
+            <button type="button" id="add-remise" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#discountModal"><i class="fa fa-percent"></i> Remise</button>
             <button type="button" id="add-line" class="btn btn-secondary"><i class="fa fa-plus"></i> Ajouter une ligne</button>
             <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Mettre à jour la commande</button>
         </div>
     </form>
+</div>
+
+<!-- Remise Modal -->
+<div class="modal fade" id="discountModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="set-discount-form" action="{{route('order.set.discount', $order)}}" method="POST">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title text-light"><i class="fa fa-percent"></i> Remise</h3>
+                </div>
+                <div class="modal-body text-center">
+                        <div class="row">
+                            <div class="col">
+                                <select name="discount_type" id="discount_type" class="form-control">
+                                    <option value="1">Pourcent (%)</option>
+                                    <option value="2">Montant (€)</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <input type="text" id="discount_value" name="discount_value" class="form-control" placeholder="Valeur">
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Appliquer</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <!-- Image Modal -->
@@ -258,9 +289,29 @@
         });
     });
 
-    let lineIndex = 1;
+        // Set discount
+        
+        $('#set-discount-form').submit((e) => {
+            e.preventDefault()
+            
+            const data = {
+                order_id: '{{$order->id}}',
+                discount_type: $('#discount_type').val(),
+                discount_value: $('#discount_value').val()
+            };
+            axios.post('{{route('order.set.discount')}}', data)
+            .then((response) => {
+                console.log(response);
+                //location.reload();
+            }).catch((error) => {
+                console.error(error)
+            });
+        })
+
+    
 
     // Ajouter une nouvelle ligne
+    let lineIndex = 1;
     $('#add-line').on('click', function () {
         let template = $('#order-line-template').html()
             .replace('##design_id##', `lines[${lineIndex}][design_id]`)

@@ -113,8 +113,9 @@
                 </tr>
             </tfoot>
         </table>
+        <button type="button" id="add-promo" class="btn btn-warning"><i class="fa fa-percent"></i> Remise</button>
         <button type="button" id="add-line" class="btn btn-secondary"><i class="fa fa-plus"></i> Ajouter une ligne</button>
-        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Enregistrer la commande</button>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-save pull-end"></i> Enregistrer la commande</button>
     </form>
 </div>
 

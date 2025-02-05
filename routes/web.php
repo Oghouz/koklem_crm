@@ -56,6 +56,7 @@ Route::middleware('auth')->group(function () {
      * Order
      */
     Route::resource('order', OrderController::class);
+    Route::post('/order/set/discount', [OrderController::class, 'setDiscount'])->name('order.set.discount');
     Route::get('/order/{id}/generate-pdf/{type}', [OrderController::class, 'generatePDF'])->name('order.generatePDF');
 
     /**
@@ -71,7 +72,7 @@ Route::middleware('auth')->group(function () {
      * Invoice
      */
     Route::resource('invoice', InvoiceController::class);
-    Route::get('invoice/pdf/download/{key}', [InvoiceController::class, 'generateInvoicePdf'])->name('invoice.pdf.download');
+    Route::get('invoice/pdf/download/{key}/{type?}', [InvoiceController::class, 'generateInvoicePdf'])->name('invoice.pdf.download');
     Route::post('invoice/multipleInvoiceStore', [InvoiceController::class, 'multipleInvoiceStore'])->name('invoice.sotre.multiple');
 
 

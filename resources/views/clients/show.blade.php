@@ -96,7 +96,7 @@
                 </tr>
                 </thead>
                 <tbody class="list" id="customer-order-table-body">
-                @foreach ($client->orders as $order)
+                @foreach ($client->orders()->orderBy('id', 'DESC')->get() as $order)
                     <tr class="hover-actions-trigger btn-reveal-trigger position-static">
                         <td class="order align-middle white-space-nowrap ps-0"><a class="fw-semibold" href="{{route('order.show', $order)}}">#{{$order->id}}</a></td>
                         <td class="payment_status align-middle white-space-nowrap text-start fw-bold text-body-tertiary">
@@ -130,7 +130,9 @@
             </div>
             <div class="row align-items-center justify-content-between py-2 pe-0 fs-9">
             <div class="col-auto d-flex">
-                <p class="mb-0 d-none d-sm-block me-3 fw-semibold text-body" data-list-info="data-list-info"></p><a class="fw-semibold" href="#!" data-list-view="*">View all<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a><a class="fw-semibold d-none" href="#!" data-list-view="less">View Less<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
+                <p class="mb-0 d-none d-sm-block me-3 fw-semibold text-body" data-list-info="data-list-info"></p>
+                <a class="fw-semibold" href="#!" data-list-view="*">Voir tous<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
+                <a class="fw-semibold d-none" href="#!" data-list-view="less">View Less<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
             </div>
             <div class="col-auto d-flex">
                 <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>

@@ -97,6 +97,7 @@ class OrderController extends Controller
             // 'lines.*.quantity' => 'required|numeric|min:1',
             // 'lines.*.price' => 'required|numeric|min:0',
         ]);
+        $productStocks = [];
 
         // Créer la commande
         $order = Order::create([
@@ -111,6 +112,7 @@ class OrderController extends Controller
 
         $total = 0;
         $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+        var_dump($validated['lines']);
         foreach ($validated['lines'] as $lineData) {
             $lineTotal = $lineData['quantity'] * $lineData['price'];
 
@@ -134,6 +136,7 @@ class OrderController extends Controller
                         'created_by' => $user->id,
                         'updated_by' => $user->id
                     ]);
+                    $productStocks[$product->id] = isset($productStocks[$product->id]) ? $productStocks[$product->id]+ $lineData['quantity'] : $lineData['quantity'];
                 }
                 
             } else {
@@ -152,6 +155,7 @@ class OrderController extends Controller
                     'created_by' => $user->id,
                     'updated_by' => $user->id
                 ]);
+                $productStocks[$product->id] = isset($productStocks[$product->id]) ? $productStocks[$product->id]+ $lineData['quantity'] : $lineData['quantity'];
             }
             
             $total += $lineTotal;
@@ -163,6 +167,20 @@ class OrderController extends Controller
             'total_tva' => $total * 0.2,
             'total_ttc' => $total * 1.2,
         ]);
+
+        // Mettre à jour stock
+        $productStockIds = array_keys($productStocks);
+        $products = Product::whereIn('id', $productStockIds)->get()->keyBy('id');
+
+        // Mettre à jour les stocks
+        foreach ($productStocks as $product_id => $quantity) {
+            $product = $products->get($product_id);
+            if ($product) {
+                $product->update([
+                    'stock' => $product->stock - $quantity
+                ]);
+            }
+        }
 
         return redirect()->route('order.show', $order->id)->with('success', 'Commande créée avec succès !');
     }
@@ -263,6 +281,11 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         //
+    }
+
+    public function setDiscount(Request $request)
+    {
+        return $request->all();
     }
 
     public function generatePDF($id, $type)

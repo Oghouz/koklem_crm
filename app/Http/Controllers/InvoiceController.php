@@ -185,59 +185,79 @@ class InvoiceController extends Controller
         return $invoice;
     }
 
-    public function generateInvoicePdf($invoice_id)
+    public function generateInvoicePdf($invoice_id, $type = false)
     {
         // Récupérer la commande avec les relations nécessaires
         $invoice = Invoice::findOrFail($invoice_id);
 
-        // Initialiser les collections pour les lignes regroupées et non regroupées
-        $groupedLines = collect();
-        $nonGroupedLines = collect();
-
-        // Grouper les lignes par `design_id` et `quantity`
-        $invoice->lines->groupBy(function ($line) {
-            return $line->design_id . '-' . $line->quantity;
-        })->each(function ($lines) use ($groupedLines, $nonGroupedLines) {
-            // Vérifier si toutes les tailles XS à XXL sont présentes
-            $requiredSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-
-            $lineSizes = $lines->pluck('size')
-                ->map(fn($size) => strtoupper(trim($size))) // Normaliser les tailles
-                ->unique()
-                ->sort()
-                ->values()
-                ->all();
-
-            // Comparer les tailles sans tenir compte de l'ordre
-            if (count($lineSizes) === count($requiredSizes) && !array_diff($requiredSizes, $lineSizes)) {
-                // Ajouter une ligne regroupée
-                $firstLine = $lines->first();
-                $groupedLines->push([
-                    'design_id' => $firstLine->design_id,
-                    'reference' => $firstLine->design->reference,
-                    'name' => $firstLine->design->name,
-                    'size' => 'XS à XXL', // Taille combinée
-                    'quantity' => $lines->first()->quantity * 6,
-                    'price' => $firstLine->product_price,
-                ]);
-            } else {
-                // Ajouter chaque ligne individuellement si elle ne remplit pas les conditions
-                foreach ($lines as $line) {
-                    $nonGroupedLines->push([
+        
+        if($type && $type == 'grouped') {
+            $finalLines = [];
+            foreach($invoice->lines as $line) {
+                $category = $line->product->category;
+                if(isset($finalLines[$category->id])) {
+                    $finalLines[$category->id]['quantity']+= $line->quantity;
+                } else {
+                    $finalLines[$category->id] = [
                         'design_id' => $line->design_id,
                         'reference' => $line->design->reference,
-                        'name' => $line->design->name,
-                        'size' => $line->product_size,
+                        'name' => $category->description,
+                        'size' => 'XS à XXL', // Taille combinée
                         'quantity' => $line->quantity,
                         'price' => $line->product_price,
-                    ]);
+                    ];
                 }
+                
             }
-        });
+        }  else {
+            // Initialiser les collections pour les lignes regroupées et non regroupées
+            $groupedLines = collect();
+            $nonGroupedLines = collect();
 
-        // Fusionner les lignes regroupées et non regroupées
-        $finalLines = $groupedLines->merge($nonGroupedLines);
+            // Grouper les lignes par `design_id` et `quantity`
+            $invoice->lines->groupBy(function ($line) {
+                return $line->design_id . '-' . $line->quantity;
+            })->each(function ($lines) use ($groupedLines, $nonGroupedLines) {
+                // Vérifier si toutes les tailles XS à XXL sont présentes
+                $requiredSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
+                $lineSizes = $lines->pluck('size')
+                    ->map(fn($size) => strtoupper(trim($size))) // Normaliser les tailles
+                    ->unique()
+                    ->sort()
+                    ->values()
+                    ->all();
+
+                // Comparer les tailles sans tenir compte de l'ordre
+                if (count($lineSizes) === count($requiredSizes) && !array_diff($requiredSizes, $lineSizes)) {
+                    // Ajouter une ligne regroupée
+                    $firstLine = $lines->first();
+                    $groupedLines->push([
+                        'design_id' => $firstLine->design_id,
+                        'reference' => $firstLine->design->reference,
+                        'name' => $firstLine->design->name,
+                        'size' => 'XS à XXL', // Taille combinée
+                        'quantity' => $lines->first()->quantity * 6,
+                        'price' => $firstLine->product_price,
+                    ]);
+                } else {
+                    // Ajouter chaque ligne individuellement si elle ne remplit pas les conditions
+                    foreach ($lines as $line) {
+                        $nonGroupedLines->push([
+                            'design_id' => $line->design_id,
+                            'reference' => $line->design->reference,
+                            'name' => $line->design->name,
+                            'size' => $line->product_size,
+                            'quantity' => $line->quantity,
+                            'price' => $line->product_price,
+                        ]);
+                    }
+                }
+            });
+
+            $finalLines = $groupedLines->merge($nonGroupedLines);
+
+        }
 
         // Charger la vue correspondante pour le PDF
         $html = view('invoices.pdf', compact('invoice', 'finalLines'))->render();
