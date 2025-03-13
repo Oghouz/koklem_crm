@@ -202,7 +202,7 @@ class InvoiceController extends Controller
                         'design_id' => $line->design_id,
                         'reference' => $line->design->reference,
                         'name' => $category->description,
-                        'size' => 'XS à XXL', // Taille combinée
+                        'size' => '', // Taille combinée
                         'quantity' => $line->quantity,
                         'price' => $line->product_price,
                     ];
