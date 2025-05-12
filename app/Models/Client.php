@@ -25,6 +25,7 @@ class Client extends Model
         'phone3',
         'email',
         'siret',
+        'price_tshirt',
         'tva_number',
         'iban',
         'bic',

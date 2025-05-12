@@ -25,8 +25,9 @@ class Order extends Model
         'updated_by'
     ];
 
-    const ORDER_STATUS_PENDING = 1;
-    const ORDER_STATUS_VALIDATED = 2;
+    // const ORDER_STATUS_PENDING = 1;
+    const ORDER_STATUS_VALIDATED = 1;
+    const ORDER_STATUS_PREPARATION = 2;
     const ORDER_STATUS_DELIVERED = 3;
     const ORDER_STATUS_RETURNED = 8;
     const ORDER_STATUS_CANCELED = 9;
@@ -66,8 +67,8 @@ class Order extends Model
     public static function getStatusLabel($status = null)
     {
         $labels = [
-            self::ORDER_STATUS_PENDING => 'En attente',
             self::ORDER_STATUS_VALIDATED => 'Validée',
+            self::ORDER_STATUS_PREPARATION => 'En préparation',
             self::ORDER_STATUS_DELIVERED => 'Livrée',
             self::ORDER_STATUS_RETURNED => 'Retournée',
             self::ORDER_STATUS_CANCELED => 'Annulée',
@@ -79,8 +80,8 @@ class Order extends Model
     public static function getStatusBadge($status)
     {
         $labels = [
-            self::ORDER_STATUS_PENDING => '<span class="badge bg-secondary">En attente</span>',
             self::ORDER_STATUS_VALIDATED => '<span class="badge bg-success">Validée</span>',
+            self::ORDER_STATUS_PREPARATION => '<span class="badge bg-secondary">En préparation</span>',
             self::ORDER_STATUS_DELIVERED => '<span class="badge bg-primary">Livrée</span>',
             self::ORDER_STATUS_RETURNED => '<span class="badge bg-warning">Retournée</span>',
             self::ORDER_STATUS_CANCELED => '<span class="badge bg-danger">Annulée</span>',

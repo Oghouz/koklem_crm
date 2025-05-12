@@ -40,7 +40,9 @@ Route::middleware('auth')->group(function () {
     /**
      * Client
      */
+
     Route::resource('client', ClientController::class);
+    Route::post('client/getPriceTshirt', action: [ClientController::class, 'getPriceTshirt'])->name('client.getPriceTshirt');
 
     /**
      * Stock

@@ -39,7 +39,7 @@ class ClientController extends Controller
             });
         }
 
-        $clients = $clients->orderBy($sort, $direction)->paginate(25);
+        $clients = $clients->orderBy($sort, $direction)->get();
 
 
         return view('clients.index', [
@@ -128,6 +128,8 @@ class ClientController extends Controller
             'phone1' => 'nullable|string|max:255',
             'phone2' => 'nullable|string|max:255',
             'phone3' => 'nullable|string|max:255',
+            'email' => 'nullable|string|max:255',
+            'price_tshirt' => 'nullable|numeric',
             'siret' => 'nullable|string|max:255',
             'tva_number' => 'nullable|string|max:255',
             'comment' => 'nullable|string|max:255',
@@ -148,6 +150,8 @@ class ClientController extends Controller
             'phone1',
             'phone2',
             'phone3',
+            'email',
+            'price_tshirt',
             'siret',
             'tva_number',
             'comment',
@@ -165,5 +169,14 @@ class ClientController extends Controller
     public function destroy(Client $client)
     {
         //
+    }
+
+    public function getPriceTshirt(Request $request)
+    {
+        $client = Client::find($request->client_id);
+
+        return response()->json([
+            'price_tshirt' => $client->price_tshirt,
+        ]);
     }
 }

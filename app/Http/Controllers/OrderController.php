@@ -27,7 +27,17 @@ class OrderController extends Controller
         $search = $request->input('search');
         $sort = $request->get('sort', 'id');
         $direction = $request->get('direction', 'desc');
-        $orders = Order::query();
+        $orders = Order::with(['orderLines']);
+        $date_debut = $request->get('date_debut');
+        $date_fin = $request->get('date_fin');
+
+        if($date_debut && !$date_fin) {
+            $orders = $orders->where('created_at', '>=', $date_debut);
+        } else if($date_fin && !$date_debut) {
+            $orders = $orders->where('created_at', '<=', $date_fin);
+        } else if($date_debut && $date_fin) {
+            $orders = $orders->whereBetween('created_at', [$date_debut, $date_fin]);
+        }
 
         $order_status_filter = $request->get('order_status');
         $order_paid_filter = $request->get('order_paid');
@@ -49,11 +59,19 @@ class OrderController extends Controller
         if($request->get('show_all')) {
             $orders = $orders->get();
         } else {
-            $orders = $orders->paginate(25)
+            $orders = $orders->paginate(100)
             ->appends(request()->query());
         }
 
-        return view('orders.index', ['orders' => $orders]);
+        $total = [
+            'product' => 0,
+        ];
+        foreach($orders as $order) {
+            $total['product']+= $order->orderLines->sum('quantity');
+        }
+        
+
+        return view('orders.index', ['orders' => $orders, 'total' => $total]);
     }
 
     /**
@@ -112,7 +130,7 @@ class OrderController extends Controller
 
         $total = 0;
         $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-        var_dump($validated['lines']);
+        $sizes_kid = ['2Y', '4Y', '6Y', '8Y', '10Y', '12Y'];
         foreach ($validated['lines'] as $lineData) {
             $lineTotal = $lineData['quantity'] * $lineData['price'];
 
@@ -138,7 +156,26 @@ class OrderController extends Controller
                     ]);
                     $productStocks[$product->id] = isset($productStocks[$product->id]) ? $productStocks[$product->id]+ $lineData['quantity'] : $lineData['quantity'];
                 }
-                
+            } else if($lineData['size'] == 'ALT-KID') {
+                $lineTotal = $lineTotal * 6;
+                foreach($sizes_kid as $size_kid) {
+                    $product = Product::where('size', $size_kid)->where('color_id', $design->color_id)->first();
+                    OrderLine::create([
+                        'order_id' => $order->id,
+                        'product_id' => $product->id,
+                        'design_id' => $design->id,
+                        'reference' => $design->reference,
+                        'name' => $design->name,
+                        'size' => $size_kid,
+                        'color' => $product->color ? $product->color->name : '',
+                        'quantity' => $lineData['quantity'],
+                        'price' => $lineData['price'],
+                        'comment' => null,
+                        'created_by' => $user->id,
+                        'updated_by' => $user->id
+                    ]);
+                    $productStocks[$product->id] = isset($productStocks[$product->id]) ? $productStocks[$product->id]+ $lineData['quantity'] : $lineData['quantity'];
+                }
             } else {
                 $product = Product::where('size', $lineData['size'])->where('color_id', $design->color_id)->first();
                 OrderLine::create([
@@ -249,7 +286,7 @@ class OrderController extends Controller
 
         $validated = $request->validate([
             'status' => 'required|numeric|in:1,2,3,8,9',
-            'client_id' => 'nullable|exists:clients,id',
+            // 'client_id' => 'nullable|exists:clients,id',
             'comment' => 'nullable|string',
             'payment_method' => 'nullable|string',
             'payment_date' => 'nullable|date',
@@ -259,7 +296,7 @@ class OrderController extends Controller
         // Mise à jour des informations de la commande
         $orderData = [
             'status' => $validated['status'] ?? null,
-            'client_id' => $validated['client_id'] ?? null,
+            // 'client_id' => $validated['client_id'] ?? null,
             'comment' => $validated['comment'] ?? null,
             'payment_method' => $validated['payment_method'] ?? null,
             'payment_date' => $validated['payment_date'] ?? null,
@@ -373,6 +410,13 @@ class OrderController extends Controller
         $order = Order::findOrFail($request->get('order_id'));
         $design = Design::findOrFail($request->get('design_id'));
         $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+        $sizes_kid = ['2Y', '4Y', '6Y', '8Y', '10Y', '12Y'];
+        $this->validate($request, [
+            'design_id' => 'required|exists:designs,id',
+            'size' => 'required|string',
+            'quantity' => 'required|numeric|min:1',
+            'price' => 'required|numeric|min:0'
+        ]);
 
         if($request->get('size') == 'ALT') {
             foreach($sizes as $size) {
@@ -391,8 +435,31 @@ class OrderController extends Controller
                     'created_by' => $user->id,
                     'updated_by' => $user->id
                 ]);
+                $product->update([
+                    'stock' => $product->stock - $request->get('quantity')
+                ]);
             }
-
+        } else if($request->get('size') == 'ALT-KID') {
+            foreach($sizes_kid as $size_kid) {
+                $product = Product::where('size', $size_kid)->where('color_id', $design->color_id)->first();
+                OrderLine::create([
+                    'order_id' => $order->id,
+                    'product_id' => $product->id,
+                    'design_id' => $design->id,
+                    'reference' => $design->reference,
+                    'name' => $design->name,
+                    'size' => $product->size,
+                    'color' => $product->color ? $product->color->name : '',
+                    'quantity' => $request->get('quantity'),
+                    'price' => $request->get('price'),
+                    'comment' => null,
+                    'created_by' => $user->id,
+                    'updated_by' => $user->id
+                ]);
+                $product->update([
+                    'stock' => $product->stock - $request->get('quantity')
+                ]);
+            }
         } else {
             $product = Product::where('size', $request->get('size'))->where('color_id', $design->color_id)->first();
             OrderLine::create([
@@ -409,6 +476,9 @@ class OrderController extends Controller
                 'created_by' => $user->id,
                 'updated_by' => $user->id
             ]);
+            $product->update([
+                'stock' => $product->stock - $request->get('quantity')
+            ]);
         }
 
         $this->recalculOrder($order);
@@ -421,10 +491,14 @@ class OrderController extends Controller
     public function updateOrderLine(Request $request, $order_line_id)
     {
         $user = Auth::user();
+        $order = Order::findOrFail($request->get('order_id'));
         $orderLine = OrderLine::findOrFail($order_line_id);
         $design = Design::findOrFail($request->get('design_id'));
         $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+        $sizes_kid = ['2Y', '4Y', '6Y', '8Y', '10Y', '12Y'];
 
+        $oldQuantity = $orderLine->quantity;
+    
         $this->validate($request, [
             'design_id' => 'required|exists:designs,id',
             'size' => 'required|string',
@@ -446,6 +520,17 @@ class OrderController extends Controller
             'updated_by' => $user->id
         ]);
 
+
+        // Mettre à jour le stock
+        $currentStock = $product->stock + $oldQuantity - $request->get('quantity');
+        $product->update([
+            'stock' => $currentStock
+        ]);
+
+
+        // Recalculer le total de la commande
+        $this->recalculOrder($order);
+
         return response([
             'status' => 'success',
         ], 201);
@@ -459,18 +544,15 @@ class OrderController extends Controller
         //Recalcul la total
         $order = $orderLine->order;
 
-        $total_ht = 0;
-        $total_lines = 0;
-        foreach($order->orderLines as $line) {
-            $total_lines+= 1;
-            $total_ht+= $line->price * $line->quantity;
+        $this->recalculOrder($order);
+
+        // Mettre à jour le stock
+        $productStock = Product::find($orderLine->product_id);
+        if ($productStock) {
+            $productStock->update([
+                'stock' => $productStock->stock + $orderLine->quantity
+            ]);
         }
-        $order->update([
-            'total_lines' => $total_lines,
-            'total_ht' => $total_ht,
-            'total_tva' => $total_ht * 0.2,
-            'total_ttc' => $total_ht * 1.2
-        ]);
 
         return response([
             'status' => 'success',
