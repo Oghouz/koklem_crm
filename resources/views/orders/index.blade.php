@@ -16,7 +16,7 @@
                     <div
                         class="col-6 col-md-4 col-xxl-2 text-center border-translucent border-start-xxl border-end-xxl-0 border-bottom-xxl-0 border-end border-bottom pb-4 pb-xxl-0 ">
                         <span class="uil fs-5 lh-1 uil-file text-primary"></span>
-                        <h1 class="fs-5 pt-3">{{$orders->total()}}</h1>
+                        <h1 class="fs-5 pt-3">{{$orders->count()}}</h1>
                         <p class="fs-9 mb-0">Total Commande</p>
                     </div>
                     <div
@@ -28,7 +28,7 @@
                     <div
                         class="col-6 col-md-4 col-xxl-2 text-center border-translucent border-start-xxl border-end-xxl-0 border-bottom-xxl-0 border-end-md border-bottom pb-4 pb-xxl-0">
                         <span class="uil fs-5 lh-1 uil-euro text-success"></span>
-                        <h1 class="fs-5 pt-3">{{number_format($orders->sum('total_ht'), 2, ',',' ')}}€</h1>
+                        <h1 class="fs-5 pt-3">{{number_format($orders->sum('total_ht'), 2, ',', ' ')}}€</h1>
                         <p class="fs-9 mb-0">Montant Total H.T</p>
                     </div>
                     <div
@@ -90,7 +90,7 @@
                                 <input type="date" class="form-control form-control-sm" name="date_fin"  placeholder="Date de fin" value="{{Request::get('date_fin')}}" />
                                 <button class="btn btn-sm btn-phoenix-primary "><i class="fa fa-search"></i></button>
                             </form>
-                            
+
                         </div>
                     </div>
                 </div>
