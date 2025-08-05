@@ -98,7 +98,8 @@
                         <th></th>
                         <th class="sort white-space-nowrap align-middle ps-0 pe-3" scope="col" data-sort="order">ORDER</th>
                         <th class="sort align-middle white-space-nowrap text-start pe-3" scope="col">STATUS COMMANDE</th>
-                        <th class="sort align-middle white-space-nowrap text-start pe-3" scope="col">FACTURER</th>
+                        <th class="sort align-middle white-space-nowrap text-start pe-3" scope="col">FACTURE</th>
+                        <th class="sort align-middle white-space-nowrap text-start pe-3" scope="col">PAIEMENT</th>
                         <th class="sort align-middle text-end pe-3" scope="col" data-sort="total">TOTAL H.T</th>
                         <th class="sort align-middle text-end pe-3" scope="col" data-sort="total">TOTAL TTC</th>
                         <th class="sort align-middle text-end pe-0" scope="col" data-sort="date">DATE</th>
@@ -126,12 +127,25 @@
                                             <span class="ms-1" data-feather="check" style="height:12.8px;"></span>
                                         </span>
                                     </a>
-                                    
+
                                 @else
                                     <span class="badge badge-phoenix fs-10 badge-phoenix-secondary">
                                         <span class="badge-label">Non facturé</span>
                                         <span class="ms-1" data -feather="x" style="height:12.8px;"></span>
                                     </span>
+                                @endif
+                            </td>
+                            <td class="align-middle white-space-nowrap text-start fw-bold text-body-tertiary">
+                                @if($order->invoices->isNotEmpty())
+                                     @if($order->invoices[0]->paid) 
+                                        <span class="badge badge-phoenix fs-10 badge-phoenix-success">
+                                            <span class="badge-label">Payé</span>
+                                        </span>
+                                    @else
+                                        <span class="badge badge-phoenix fs-10 badge-phoenix-danger">
+                                            <span class="badge-label">Non payé</span>
+                                        </span>
+                                    @endif
                                 @endif
                             </td>
                             <td class="total align-middle text-end fw-semibold pe-3 text-body-highlight">
