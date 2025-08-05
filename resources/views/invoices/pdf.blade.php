@@ -209,6 +209,15 @@
 
         <div class="row">
             <div class="col-xs-12">
+                <span>Commandes facturées : </span><br>
+                @foreach($invoice->orders as $order)
+                    <span> </span> commande n°{{$order->id}} du {{\Carbon\Carbon::parse($order->delivery_date)->format('d/m/Y')}}<br>
+                @endforeach
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
                 Transférez le montant vers le compte ci-dessous:<br>
                 IBAN: FR76 1695 8000 0165 9315 5973 914<br>
                 BIC: QNTOFRP1XXX

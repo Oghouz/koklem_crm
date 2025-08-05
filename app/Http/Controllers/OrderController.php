@@ -384,10 +384,10 @@ class OrderController extends Controller
 
         // Nom du fichier
         $fileName = $type === 'bl' ? 'Bon_de_Livraison_' : 'Facture_';
-        $fileName .= $order->num . '.pdf';
+        $fileName .= $order->id . '.pdf';
 
         // Téléchargement du fichier PDF
-        return $dompdf->stream($fileName, ['Attachment' => false]);
+        return $dompdf->stream($fileName);
 
 
         // Initialiser les collections pour les lignes regroupées et non regroupées

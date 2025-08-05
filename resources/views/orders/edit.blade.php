@@ -69,7 +69,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
                         <div class="row gx-3">
                             <div class="col-sm-6">
                                 <label for="payment_date">Payé le</label>
@@ -86,7 +86,7 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     {{-- Commentaire global --}}
                     <div class="mb-3">

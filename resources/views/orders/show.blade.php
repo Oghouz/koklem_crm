@@ -22,13 +22,13 @@
             <a href="{{ route('order.generatePDF', ['id' => $order->id, 'type' => 'bl']) }}" class="btn btn-sm btn-outline-info" target="_blank">
                 <i class="fa fa-file-pdf"></i> Bon de Livraison
             </a>
-            @if(!$order->invoice_id)
+            {{-- @if(!$order->invoice_id)
                 <button class="btn btn-success" onclick="generateInvoice()"><i class="fa fa-file-invoice"></i> Facturer la vente</button>
             @else
                 <a class="btn btn-outline-success" href="{{route('invoice.pdf.download', $order->invoice_id)}}" target="_blank">
                     <i class="fa fa-file-invoice"></i> Télécharger la facture
                 </a>
-            @endif
+            @endif --}}
         </div>
     </div>
     <div class="row mt-3">

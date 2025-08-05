@@ -72,15 +72,15 @@
                         </div>
                         <div class="btn-group position-static text-nowrap" role="group">
                             <button class="btn btn-phoenix-secondary px-7 flex-shrink-0" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
-                                Paiement<span class="fas fa-angle-down ms-2"></span>
+                                Facturer<span class="fas fa-angle-down ms-2"></span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_paid' => 1])}}">Payée</a></li>
-                                <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_paid' => 0])}}">Non Payée</a></li>
+                                <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['billed' => 1])}}">Facturée</a></li>
+                                <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['billed' => 0])}}">Non facturée</a></li>
                                 <li>
                                     <hr class="dropdown-divider" />
                                 </li>
-                                <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['order_paid' => ''])}}">Tous</a></li>
+                                <li><a class="dropdown-item" href="{{request()->fullUrlWithQuery(['billed' => ''])}}">Tous</a></li>
                             </ul>
                         </div>
                         <div class="btn-group position-static text-nowrap" role="group">
@@ -125,9 +125,6 @@
                     <th class="sort align-middle text-start pe-3" scope="col" data-sort="fulfilment_status">
                         @sortablelink('status', 'STATUT')
                     </th>
-                    <th class="sort align-middle pe-3" scope="col" data-sort="payment_status">
-                        @sortablelink('paid', 'PAIEMENT')
-                    </th>
                     <th class="sort align-middle text-center" scope="col" data-sort="delivery_type">
                         @sortablelink('invoice_id', 'FACTURÉE')
                     </th>
@@ -141,14 +138,10 @@
                         <tr class="hover-actions-trigger btn-reveal-trigger position-static" id="line-{{$order->id}}">
                             <td class="fs-9 align-middle px-0 py-3 ps-2">
                                 <div class="form-check mb-0 fs-8">
-                                    @if($order->invoice_id)
-                                        <i class="form-check-input fa fa-check text-success"></i>
-                                    @else
-                                        <input class="form-check-input line-checkbox" 
-                                        type="checkbox" 
-                                        value="{{$order->id}}"  
-                                        onchange="selectLine(this, '{{$order->id}}')" />
-                                    @endif
+                                    <input class="form-check-input line-checkbox" 
+                                    type="checkbox" 
+                                    value="{{$order->id}}"  
+                                    onchange="selectLine(this, '{{$order->id}}')" />
                                 </div>
                             </td>
                             <td class="order align-middle white-space-nowrap py-0">
@@ -170,21 +163,8 @@
                             <td class="fulfilment_status align-middle white-space-nowrap text-start fw-bold text-body-tertiary">
                                 {!! App\Models\Order::getStatusBadge($order->status) !!}
                             </td>
-                            <td class="payment_status align-middle white-space-nowrap text-start fw-bold text-body-tertiary">
-                                @if($order->paid)
-                                    <span class="badge badge-phoenix fs-10 badge-phoenix-success">
-                                        <span class="badge-label">Payée</span>
-                                        <span class="ms-1" data-feather="check" style="height:12.8px;width:12.8px;"></span>
-                                    </span>
-                                @else
-                                    <span class="badge badge-phoenix fs-10 badge-phoenix-warning">
-                                        <span class="badge-label">En attente</span>
-                                        <span class="ms-1" data-feather="clock" style="height:12.8px;width:12.8px;"></span>
-                                    </span>
-                                @endif
-                            </td>
                             <td class="delivery_type align-middle white-space-nowrap text-body fs-9 text-center">
-                                @if($order->invoice_id)
+                                @if($order->invoices->isNotEmpty())
                                     <i class="fa fa-check-circle text-success"></i>
                                 @endif
                             </td>
