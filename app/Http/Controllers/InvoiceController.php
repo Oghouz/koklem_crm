@@ -386,4 +386,27 @@ class InvoiceController extends Controller
         // Téléchargement du fichier PDF
         return $dompdf->stream($fileName, ['Attachment' => false]);
     }
+
+    public function setPayment(Request $request)
+    {
+        $validated = $request->validate([
+            'invoice_id' => 'required|exists:invoices,id',
+            'paid_at' => 'required|date',
+            'total_paid' => 'required',
+            'payment_method' => 'required|string|max:255',
+        ]);
+
+
+        $invoice = Invoice::find($validated['invoice_id']);
+        $invoice->paid = true;
+        $invoice->paid_at = Carbon::parse($validated['paid_at']);
+        $invoice->total_paid = $validated['total_paid'];
+        $invoice->payment_method = $validated['payment_method'];
+        $invoice->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Statut de paiement mis à jour avec succès.',
+        ]);
+    }
 }

@@ -16,7 +16,7 @@
                     <div
                         class="col-6 col-md-4 col-xxl-2 text-center border-translucent border-start-xxl border-end-xxl-0 border-bottom-xxl-0 border-end border-bottom pb-4 pb-xxl-0 ">
                         <span class="uil fs-5 lh-1 uil-file text-primary"></span>
-                        <h1 class="fs-5 pt-3">{{$orders->count()}}</h1>
+                        <h1 class="fs-5 pt-3">{{$orders->total()}}</h1>
                         <p class="fs-9 mb-0">Total Commande</p>
                     </div>
                     <div
@@ -97,9 +97,6 @@
                 <div class="col-auto">
                     {{-- <button class="btn btn-link text-body me-4 px-0"><span class="fa-solid fa-file-export fs-9 me-2"></span>Export</button> --}}
                     <a href="{{route('order.create')}}" class="btn btn-outline-primary"><span class="fas fa-plus me-2"></span>Nouvelle commande</a>
-                    <button class="btn btn-outline-success" onclick="generateInvoice()">
-                        <span class="fas fa-file-invoice"></span> Générer le(s) facture(s)
-                    </button>
                 </div>
             </div>
         </div>
@@ -220,93 +217,6 @@ function selectLine(elem, line_id)
     }
 }
 
-function generateInvoice()
-{
-    let url = 'invoice/multipleInvoiceStore';
-    let checkboxs = $('.line-checkbox');
-    let selectedOders = [];
-
-    checkboxs.each((i,item) => {
-        let isChecked = $(item).is(':checked');
-        if(isChecked) {
-            selectedOders.push($(item).val())
-        }
-    })
-
-    if(!selectedOders.length) {
-        Swal.fire({
-            title: "Aucune commande n'a été sélectionnée!",
-            icon: "warning",
-            draggable: true
-        });
-        return;
-    }
-
-    let orders = selectedOders.join(', ')
-    Swal.fire({
-        icon: "info",
-        title: "Confirmation",
-        html: `
-            <p>Commandes sélectionnée: <b>`+selectedOders.length+`</b></p>
-            `+orders+`
-        `,
-        showCancelButton: true,
-        confirmButtonText: "Confirmer",
-        cancelButtonText: "Annuler",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            
-            Swal.fire({
-                title: 'Création de la facture en cours...',
-                text: 'Veuillez patienter, la facture est en train de se générer.',
-                icon: 'info',
-                allowOutsideClick: false,  // Empêche de fermer la fenêtre pendant le chargement
-                showConfirmButton: false,  // Cache le bouton de confirmation
-                didOpen: () => {
-                    Swal.showLoading();  // Affiche le spinner de chargement
-                }
-            });
-            
-            // Requête AJAX avec axios
-            let url = "{{route('invoice.sotre.multiple')}}"
-            axios.post(url, {
-                orderIds: selectedOders,  // L'ID de la commande provenant de Blade
-                _token: '{{ csrf_token() }}'  // Ajout du token CSRF pour sécuriser la requête
-            }).then((response) => {
-                // Vérification du retour serveur
-                console.log(response)
-                if (response.data.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Facture générée avec succès',
-                        text: 'La facture a été créée avec succès.',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        // Optionnel : Redirection vers la page des factures après la création
-                        window.location.reload(); // Modifiez cette URL selon votre besoin
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erreur',
-                        text: 'Une erreur est survenue lors de la création de la facture.',
-                        confirmButtonText: 'Essayer à nouveau'
-                    });
-                }
-            }).catch((error) => {
-                // Gestion des erreurs réseau ou autres
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erreur de communication',
-                    text: error.response.data.error,
-                    confirmButtonText: 'Réessayer'
-                });
-                console.error('Erreur :', error.response.data.error);  // Log de l'erreur pour débogage
-            });
-        }
-    });
-    console.log(selectedOders);
-}
 
 </script>
 @endsection

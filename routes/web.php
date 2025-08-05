@@ -74,9 +74,11 @@ Route::middleware('auth')->group(function () {
     /**
      * Invoice
      */
+    
     Route::resource('invoice', InvoiceController::class);
     Route::get('invoice/pdf/download/{key}/{type?}', [InvoiceController::class, 'generateInvoicePdf'])->name('invoice.pdf.download');
     Route::post('invoice/multipleInvoiceStore', [InvoiceController::class, 'multipleInvoiceStore'])->name('invoice.sotre.multiple');
+    Route::post('invoice/set/payment', [InvoiceController::class, 'setPayment'])->name('invoice.set.payment');
 
 
 });
