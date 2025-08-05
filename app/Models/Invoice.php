@@ -45,9 +45,9 @@ class Invoice extends Model
         return $this->belongsTo(Client::class, 'client_id');
     }
 
-    public function order()
+    public function orders()
     {
-        return $this->belongsTo(Order::class, 'order_id');
+        return $this->belongsToMany(Order::class, 'invoice_order');
     }
 
     public function lines()

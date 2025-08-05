@@ -30,10 +30,16 @@
         <h2>BON DE LIVRAISON</h2>
         <div class="row">
             <div class="col-xs-6">
-                Commande : #{{ $order->id }}<br>
-                Date : {{ $order->created_at->format('d/m/Y') }}
+                <p class="fw-bold">SAS KOKLEM</p>
+                3 RUE DE PROVENCE<br>
+                94510, LA QUEUE-EN-BRIE<br>
+                SIRET: 93020115700011<br>
+                contact@koklem.fr<br>
+
             </div>
             <div class="col-xs-6">
+                Commande : #{{ $order->id }}<br>
+                Date : {{ $order->created_at->format('d/m/Y') }} <br><br><br>
                 <p class="fw-bold">{{ $order->client->company }}</p>
                 {{ $order->client->address1 }}<br>
                 {{ $order->client->zip_code . ', ' . $order->client->city }}

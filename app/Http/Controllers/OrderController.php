@@ -102,6 +102,31 @@ class OrderController extends Controller
         return view('orders.create', compact('clients', 'products', 'designs', 'lines'));
     }
 
+    public function createExpress()
+    {
+        $clients = Client::all();
+        $products = Product::all();
+        $designs = Design::all();
+
+        $lines = [];
+
+        foreach ($designs as $design) {
+            
+            foreach($products as $product) {
+                $lines[] = [
+                    'design_id' => $design->id,
+                    'ref' => $design->reference,
+                    'name' => $design->name,
+                    'product_id' => $product->id,
+                    'size' => $product->size,
+                    'color' => $product->color,
+                ];
+            }
+        }     
+
+        return view('orders.create-express', compact('clients', 'products', 'designs', 'lines'));
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -330,6 +355,41 @@ class OrderController extends Controller
         // Récupérer la commande avec les relations nécessaires
         $order = Order::with('orderLines.design', 'client')->findOrFail($id);
 
+        $lines = $order->orderLines;
+        $finalLines = [];
+        foreach ($lines as $line) {
+            $category_id = $line->product->category ? $line->product->category->id : 0;
+            if(isset($finalLines[$category_id])) {
+                $finalLines[$category_id]['quantity'] += $line->quantity;
+            } else {
+                $finalLines[$category_id]['quantity'] = $line->quantity;
+                $finalLines[$category_id]['price'] = $line->price;
+            }
+        }
+
+        $view = 'pdfs.bon_livraison_grouped';
+
+        // Charger la vue correspondante pour le PDF
+        $html = view($view, compact('order', 'finalLines'))->render();
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true); // Autoriser les fichiers distants
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Nom du fichier
+        $fileName = $type === 'bl' ? 'Bon_de_Livraison_' : 'Facture_';
+        $fileName .= $order->num . '.pdf';
+
+        // Téléchargement du fichier PDF
+        return $dompdf->stream($fileName, ['Attachment' => false]);
+
+
         // Initialiser les collections pour les lignes regroupées et non regroupées
         $groupedLines = collect();
         $nonGroupedLines = collect();
@@ -370,6 +430,7 @@ class OrderController extends Controller
                         'size' => $line->size,
                         'quantity' => $line->quantity,
                         'price' => $line->price,
+                        'category' => $line->design->category ? $line->design->category->name : '',
                     ]);
                 }
             }
@@ -379,7 +440,7 @@ class OrderController extends Controller
         $finalLines = $groupedLines->merge($nonGroupedLines);
 
         // Déterminer le type de document
-        $view = $type === 'bl' ? 'pdfs.bon_livraison' : 'pdfs.facture';
+        $view = $type === 'bl' ? 'pdfs.bon_livraison_grouped' : 'pdfs.facture';
 
         // Charger la vue correspondante pour le PDF
         $html = view($view, compact('order', 'finalLines'))->render();

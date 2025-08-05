@@ -82,40 +82,60 @@
         </div>
         <div class="col-12 col-xxl-8">
             <div class="mb-6">
-            <h3 class="mb-4">Commandes <span class="text-body-tertiary fw-normal">({{$client->orders->count()}})</span></h3>
+                <div class="row">
+                    <div class="col">
+                        <h3 class="mb-4">Commandes <span class="text-body-tertiary fw-normal">({{$client->orders->count()}})</span></h3>
+                    </div>
+                    <div class="col text-end">
+                        <button type="button" class="btn btn-success" onclick="facture()"><i class="fa fa-file"></i> FACTURE</button>
+                    </div>
+                </div>
             <div class="border-top border-bottom border-translucent" id="customerOrdersTable" data-list='{"valueNames":["order","total","payment_status","fulfilment_status","delivery_type","date"],"page":6,"pagination":true}'>
                 <div class="table-responsive scrollbar">
                 <table class="table table-sm fs-9 mb-0">
                     <thead>
                     <tr>
+                        <th></th>
                         <th class="sort white-space-nowrap align-middle ps-0 pe-3" scope="col" data-sort="order">ORDER</th>
-                        <th class="sort align-middle white-space-nowrap pe-3" scope="col" data-sort="payment_status">STATUT PAYMENT</th>
-                        <th class="sort align-middle white-space-nowrap text-start pe-3" scope="col" data-sort="fulfilment_status">STATUS COMMANDE</th>
-                        <th class="sort align-middle text-end pe-3" scope="col" data-sort="total">TOTAL</th>
+                        <th class="sort align-middle white-space-nowrap text-start pe-3" scope="col">STATUS COMMANDE</th>
+                        <th class="sort align-middle white-space-nowrap text-start pe-3" scope="col">FACTURER</th>
+                        <th class="sort align-middle text-end pe-3" scope="col" data-sort="total">TOTAL H.T</th>
+                        <th class="sort align-middle text-end pe-3" scope="col" data-sort="total">TOTAL TTC</th>
                         <th class="sort align-middle text-end pe-0" scope="col" data-sort="date">DATE</th>
                     </tr>
                     </thead>
                     <tbody class="list" id="customer-order-table-body">
                     @foreach ($client->orders()->orderBy('id', 'DESC')->get() as $order)
                         <tr class="hover-actions-trigger btn-reveal-trigger position-static">
-                            <td class="order align-middle white-space-nowrap ps-0"><a class="fw-semibold" href="{{route('order.show', $order)}}">#{{$order->id}}</a></td>
-                            <td class="payment_status align-middle white-space-nowrap text-start fw-bold text-body-tertiary">
-                                @if($order->paid)
-                                    <span class="badge badge-phoenix fs-10 badge-phoenix-success">
-                                        <span class="badge-label">Payée</span>
-                                        <span class="ms-1" data-feather="check" style="height:12.8px;"></span>
-                                    </span>
-                                @else
-                                    <span class="badge badge-phoenix fs-10 badge-phoenix-warning">
-                                        <span class="badge-label">En attente</span>
-                                        <span class="ms-1" data-feather="clock" style="height:12.8px;"></span>
-                                    </span>
+                            <td>
+                                @if(!$order->invoices->isNotEmpty())
+                                    <input type="checkbox" class="form-check-input" id="selected-order-{{$order->id}}" name="orders[]" value="{{$order->id}}">
                                 @endif
                             </td>
+                            <td class="order align-middle white-space-nowrap ps-0"><a class="fw-semibold" href="{{route('order.show', $order)}}">#{{$order->id}}</a></td>
                             <td class="fulfilment_status align-middle white-space-nowrap text-start fw-bold text-body-tertiary">
                                 <span class="badge badge-phoenix fs-10 badge-phoenix-info">
                                     <span class="badge-label">{!! App\Models\Order::getStatusLabel($order->status) !!}</span>
                                 </span>
+                            </td>
+                            <td class="align-middle white-space-nowrap text-start fw-bold text-body-tertiary">
+                                @if($order->invoices->isNotEmpty())
+                                    <a href="{{route('invoice.show', $order->invoices[0])}}" target="_blank">
+                                        <span class="badge badge-phoenix fs-10 badge-phoenix-success">
+                                            <span class="badge-label">Facturé</span>
+                                            <span class="ms-1" data-feather="check" style="height:12.8px;"></span>
+                                        </span>
+                                    </a>
+                                    
+                                @else
+                                    <span class="badge badge-phoenix fs-10 badge-phoenix-secondary">
+                                        <span class="badge-label">Non facturé</span>
+                                        <span class="ms-1" data -feather="x" style="height:12.8px;"></span>
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="total align-middle text-end fw-semibold pe-3 text-body-highlight">
+                                {{number_format($order->total_ht, 2, ',', ' ')}} €
                             </td>
                             <td class="total align-middle text-end fw-semibold pe-3 text-body-highlight">
                                 {{number_format($order->total_ttc, 2, ',', ' ')}} €
@@ -145,4 +165,79 @@
         </div>
         </div>
     </div>
+@endsection
+
+
+@section('script')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.8/axios.min.js"
+        integrity="sha512-v8+bPcpk4Sj7CKB11+gK/FnsbgQ15jTwZamnBf/xDmiQDcgOIYufBo6Acu1y30vrk8gg5su4x0CG3zfPaq5Fcg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script>
+            function facture() {
+                let selectedOrders = [];
+                document.querySelectorAll('input[name="orders[]"]:checked').forEach((checkbox) => {
+                    selectedOrders.push(checkbox.value);
+                });
+
+                if (selectedOrders.length > 0) {
+                    console.log('Selected Orders:', selectedOrders);
+                    //Confirmation de l'action
+                    Swal.fire({
+                        title: 'Confirmer la facturation',
+                        html: 'Êtes-vous sûr de vouloir facturer <b>'+selectedOrders.length+'</b> commandes sélectionnées ?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Oui, facturer',
+                        cancelButtonText: 'Annuler'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redirection vers la route de facturation avec les commandes sélectionnées
+                            console.log('Facturation des commandes:', selectedOrders);
+                            axios.post("{{route('invoice.sotre.multiple')}}", {
+                                order_ids: selectedOrders,  // L'ID de la commande provenant de Blade
+                                client_id: {{$client->id}},  // L'ID du client provenant de Blade
+                                _token: '{{ csrf_token() }}'  // Ajout du token CSRF pour sécuriser la requête
+                            }).then((response) => {
+                                if (response.data.status === 'success') {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Facture générée avec succès',
+                                        text: 'La facture a été créée avec succès.',
+                                        confirmButtonText: 'OK'
+                                    }).then(() => {
+                                        // Optionnel : Redirection vers la page des factures après la création
+                                        window.location.reload(); // Modifiez cette URL selon votre besoin
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Erreur',
+                                        text: 'Une erreur est survenue lors de la création de la facture.',
+                                        confirmButtonText: 'Essayer à nouveau'
+                                    });
+                                }
+                            }).catch((error) => {
+                                // Gestion des erreurs réseau ou autres
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Erreur de communication',
+                                    text: 'Une erreur est survenue lors de la communication avec le serveur.',
+                                    confirmButtonText: 'Réessayer'
+                                });
+                                console.error('Erreur :', error);  // Log de l'erreur pour débogage
+                            });
+                        }
+                    }); 
+                } else {
+                    Swal.fire({
+                        title: 'Aucune commande sélectionnée',
+                        text: 'Veuillez sélectionner au moins une commande à facturer.',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                    //alert('Veuillez sélectionner au moins une commande à facturer.');
+                }
+            }
+        </script>   
+
 @endsection

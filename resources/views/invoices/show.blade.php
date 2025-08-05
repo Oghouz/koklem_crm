@@ -21,10 +21,10 @@
                     </svg><!-- <span class="fa-solid fa-download me-sm-2"></span> Font Awesome fontawesome.com --><span
                         class="d-none d-sm-inline-block">Télécharger Facture</span>
                 </a>
-            
+
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                     <li><a class="dropdown-item" href="{{route('invoice.pdf.download', $invoice->id)}}" target="_blank">Ligne détaillée</a></li>
-                    <li><a class="dropdown-item" href="{{route('invoice.pdf.download', ['key'=>$invoice->id,'type'=>'grouped'])}}" target="_blank">Ligne grouppée</a></li>
+                    <li><a class="dropdown-item" href="{{route('invoice.pdf.download', ['key' => $invoice->id, 'type' => 'grouped'])}}" target="_blank">Ligne grouppée</a></li>
                 </ul>
             </div>
         </div>
@@ -49,13 +49,32 @@
                         <tr>
                             <td class="p-0">N° Commande :</td>
                             <td class="p-0">
-                                <a href="{{route('order.show', $invoice->order_id)}}" class="fs-9 fw-bold mb-0">{{$invoice->order_id}}</a>
+                                @foreach ($invoice->orders as $order)
+                                        <a href="{{route('order.show', $order->id)}}" class="fs-9 fw-bold mb-0" target="_blank">[{{$order->id}}]</a>
+                                        <span> </span>
+                                @endforeach
                             </td>
                         </tr>
-                        <tr>
-                            <td class="p-0">Date de Commande :</td>
-                            <td class="p-0"> {{$invoice->order->created_at}}</td>
-                        </tr>
+
+                        @if($invoice->paid)
+                            <tr>
+                                <td class="p-0">Mode de paiement :</td>
+                                <td class="p-0"><span class="badge bg-info">{{$invoice->payment_method}}</span></td>
+                            </tr>
+                            <tr>
+                                <td class="p-0">Date de paiement :</td>
+                                <td class="p-0">{{$invoice->paid_at	}}</td>
+                            </tr>
+                        @else 
+                            <tr>
+                                <td class="p-0">Status de paiement :</td>
+                                <td class="p-0">
+                                    <a href="#" data-toggle="modal" data-target="#paymentModal">
+                                        <span class="text-danger">Non payé</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        @endif
                     </table>
                 </div>
             </div>

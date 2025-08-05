@@ -50,7 +50,12 @@ class Order extends Model
 
     public function invoice()
     {
-        return $this->belongsTo(Invoice::class, 'order_id');
+        return $this->belongsTo(Invoice::class, 'invoice_order');
+    }
+
+    public function invoices()
+    {
+        return $this->belongsToMany(Invoice::class, 'invoice_order');
     }
 
     // Si vous avez aussi besoin de l'utilisateur qui a créé ou mis à jour la commande :

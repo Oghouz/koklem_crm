@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
     /**
      * Order
      */
+    Route::get('/order/create-express', [OrderController::class, 'createExpress'])->name('order.createExpress');
     Route::resource('order', OrderController::class);
     Route::post('/order/set/discount', [OrderController::class, 'setDiscount'])->name('order.set.discount');
     Route::get('/order/{id}/generate-pdf/{type}', [OrderController::class, 'generatePDF'])->name('order.generatePDF');
