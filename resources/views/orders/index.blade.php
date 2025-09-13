@@ -99,6 +99,7 @@
                 <div class="col-auto">
                     {{-- <button class="btn btn-link text-body me-4 px-0"><span class="fa-solid fa-file-export fs-9 me-2"></span>Export</button> --}}
                     <a href="{{route('order.create')}}" class="btn btn-outline-primary"><span class="fas fa-plus me-2"></span>Nouvelle commande</a>
+                    <a href="{{route('order.createExpress')}}" class="btn btn-outline-primary"></span>Express</a>
                 </div>
             </div>
         </div>
