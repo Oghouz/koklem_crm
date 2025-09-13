@@ -132,6 +132,7 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request->all());
         $user = Auth::user();
         $validated = $request->validate([
             'client_id' => 'nullable|exists:clients,id',
@@ -462,8 +463,6 @@ class OrderController extends Controller
         // Téléchargement du fichier PDF
         return $dompdf->stream($fileName, ['Attachment' => false]);
     }
-
-
     public function addOrderLine(Request $request)
     {
         $user = Auth::user();
@@ -596,7 +595,6 @@ class OrderController extends Controller
             'status' => 'success',
         ], 201);
     }
-
     public function deleteOrderLine($order_line_id)
     {
         $orderLine = OrderLine::findOrFail($order_line_id);

@@ -1,9 +1,16 @@
 @extends('layouts.app')
 @section('style')
     <style>
-        .quantity {
-            width: 74px;
-        }
+    .form-control {
+        padding: 0.5rem 0.5rem;
+    }
+    .input-group-text {
+        padding: 0.5rem 0.5rem;
+        background-color: rgb(48, 49, 49) !important;
+    }
+    .quantity {
+        width: 74px;
+    }
     </style>
 @endsection
 
@@ -36,9 +43,8 @@
 
         <h1 class="mt-5">Créer une nouvelle commande</h1>
 
-        <form action="{{ route('order.store') }}" method="POST">
+        <form action="{{ route('order.store') }}" method="POST" id="order-form">
             @csrf
-
             {{-- Sélection du client (optionnel) --}}
             <div class="mb-3">
                 <label for="client_id" class="form-label">Client (optionnel)</label>
@@ -66,13 +72,7 @@
                 <tr>
                     <th>Produit</th>
                     <th>Type</th>
-                    <th class="text-center">XS</th>
-                    <th class="text-center">S</th>
-                    <th class="text-center">M</th>
-                    <th class="text-center">L</th>
-                    <th class="text-center">XL</th>
-                    <th class="text-center">XXL</th>
-                    <th>Prix</th>
+                    <th colspan="7">Taille</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -89,39 +89,74 @@
                             </select>
                         </td>
                         <td>
-                            <select class="form-select" name="" id="">
-                                <option value="A">Adulte</option>
-                                <option value="E">Enfant</option>
+                            <select class="form-select" class="product-type" data-line-id="0" onchange="changeTypeProduct(event)">
+                                <option value="TA">T-shirt adulte</option>
+                                <option value="SA">Sweat adulte</option>
+                                <option value="SCA">Sweat cap adulte</option>
+                                <option value="TE">T-shirt enfant</option>
+                                <option value="SE">Sweat enfant</option>
+                                <option value="SCE">Sweat cap enfant</option>
                             </select>
                         </td>
-                        <td class="text-center">
-                            <div class="col-auto">
-                                <div class="input-group mb-2">
-                                    <div class="input-group-prepend">
-                                        <div class="input-group-text">XS</div>
-                                    </div>
-                                    <input type="number" class="form-control quantity">
-                                </div>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-group-text" id="size-0-1">XS</span>
+                                <select class="form-control" name="lines[0][XS][quantity]">
+                                    @for($i = 0; $i <= 99; $i++)
+                                        <option value="{{$i}}">{{$i}}</option>
+                                    @endfor
+                                </select>
                             </div>
                         </td>
-                        <td class="text-center">
-                            <span>S</span>
-                            <input type="number" step="1" min="1" name="lines[0][S][quantity]" class="form-control quantity"/>
-                        </td>
-                        <td class="text-center">
-                            <input type="number" step="1" min="1" name="lines[0][M][quantity]" class="form-control quantity"/>
-                        </td>
-                        <td class="text-center">
-                            <input type="number" step="1" min="1" name="lines[0][L][quantity]" class="form-control quantity"/>
-                        </td>
-                        <td class="text-center">
-                            <input type="number" step="1" min="1" name="lines[0][XL][quantity]" class="form-control quantity"/>
-                        </td>
-                        <td class="text-center">
-                            <input type="number" step="1" min="1" name="lines[0][XXL][quantity]" class="form-control quantity"/>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-group-text" id="size-0-2">S</span>
+                                <select class="form-control"  name="lines[0][S][quantity]">
+                                    @for($i = 0; $i <= 99; $i++)
+                                        <option value="{{$i}}">{{$i}}</option>
+                                    @endfor
+                                </select>
+                            </div>
                         </td>
                         <td>
-                            <input type="number" step="0.01" min="0" name="##price##" class="form-control price"/>
+                            <div class="input-group">
+                                <span class="input-group-text" id="size-0-3">M</span>
+                                <select class="form-control"  name="lines[0][M][quantity]">
+                                    @for($i = 0; $i <= 99; $i++)
+                                        <option value="{{$i}}">{{$i}}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-group-text" id="size-0-4">L</span>
+                                <select class="form-control"  name="lines[0][L][quantity]">
+                                    @for($i = 0; $i <= 99; $i++)
+                                        <option value="{{$i}}">{{$i}}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-group-text" id="size-0-5">XL</span>
+                                <select class="form-control" name="lines[0][XL][quantity]">
+                                    @for($i = 0; $i <= 99; $i++)
+                                        <option value="{{$i}}">{{$i}}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-group-text" id="size-0-6">XXL</span>
+                                <select class="form-control" name="lines[0][XXL][quantity]">
+                                    @for($i = 0; $i <= 99; $i++)
+                                        <option value="{{$i}}">{{$i}}</option>
+                                    @endfor
+                                </select>
+                            </div>
                         </td>
                         <td>
                             <button type="button" class="btn btn-danger btn-sm remove-line">X</button>
@@ -129,16 +164,12 @@
                     </tr>
                 </tbody>
                 <tfoot>
-                    <tr>
-                        <th colspan="2">TOTAL: </th>
-                        <th class="text-center" id="total-quantity">0</th>
-                        <th class="text-end" id="total-price">0.00€</th>
-                    </tr>
+
                 </tfoot>
             </table>
-            <button type="button" id="add-discount" class="btn btn-warning"><i class="fa fa-percent"></i> Remise</button>
+
             <button type="button" id="add-line" class="btn btn-secondary"><i class="fa fa-plus"></i> Ajouter une ligne</button>
-            <button type="submit" class="btn btn-primary"><i class="fa fa-save pull-end"></i> Enregistrer la commande</button>
+            <button type="submit" class="btn btn-primary position-absolute end-0"><i class="fa fa-save pull-end"></i> Enregistrer la commande</button>
         </form>
     </div>
 
@@ -156,29 +187,74 @@
                 </select>
             </td>
             <td>
-                <select name="##size##" class="form-control select-size">
-                    <option value="">- Séléctionner la taille</option>
-                    <option value="ALT">À la taille (Adulte)</option>
-                    <option value="XS">XS</option>
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                    <option value="XXL">XXL</option>
-                    <option value="ALT-KID">À la taille (KID)</option>
-                    <option value="2Y">KID 2Y</option>
-                    <option value="4Y">KID 4Y</option>
-                    <option value="6Y">KID 6Y</option>
-                    <option value="8Y">KID 8Y</option>
-                    <option value="10Y">KID 10Y</option>
-                    <option value="12Y">KID 12Y</option>
+                <select class="form-select" class="product-type" data-line-id="##index_line##" onchange="changeTypeProduct(event)">
+                    <option value="TA">T-shirt adulte</option>
+                    <option value="SA">Sweat adulte</option>
+                    <option value="SCA">Sweat cap adulte</option>
+                    <option value="TE">T-shirt enfant</option>
+                    <option value="SE">Sweat enfant</option>
+                    <option value="SCE">Sweat cap enfant</option>
                 </select>
             </td>
             <td>
-                <input type="number" step="1" min="1" name="##quantity##" class="form-control quantity" value="1" />
+                <div class="input-group">
+                    <span class="input-group-text" id="size-##index_line##-1">XS</span>
+                    <select class="form-control" name="lines[##index_line##][XS][quantity]">
+                        @for($i = 0; $i <= 99; $i++)
+                            <option value="{{$i}}">{{$i}}</option>
+                        @endfor
+                    </select>
+                </div>
             </td>
             <td>
-                <input type="number" step="0.01" min="0" name="##price##" class="form-control price" />
+                <div class="input-group">
+                    <span class="input-group-text" id="size-##index_line##-2">S</span>
+                    <select class="form-control" name="lines[##index_line##][S][quantity]">
+                        @for($i = 0; $i <= 99; $i++)
+                            <option value="{{$i}}">{{$i}}</option>
+                        @endfor
+                    </select>
+                </div>
+            </td>
+            <td>
+                <div class="input-group">
+                    <span class="input-group-text" id="size-##index_line##-3">M</span>
+                    <select class="form-control" name="lines[##index_line##][M][quantity]">
+                        @for($i = 0; $i <= 99; $i++)
+                            <option value="{{$i}}">{{$i}}</option>
+                        @endfor
+                    </select>
+                </div>
+            </td>
+            <td>
+                <div class="input-group">
+                    <span class="input-group-text" id="size-##index_line##-4">L</span>
+                    <select class="form-control" name="lines[##index_line##][L][quantity]">
+                        @for($i = 0; $i <= 99; $i++)
+                            <option value="{{$i}}">{{$i}}</option>
+                        @endfor
+                    </select>
+                </div>
+            </td>
+            <td>
+                <div class="input-group">
+                    <span class="input-group-text"  id="size-##index_line##-5">XL</span>
+                    <select class="form-control" name="lines[##index_line##][XL][quantity]">
+                        @for($i = 0; $i <= 99; $i++)
+                            <option value="{{$i}}">{{$i}}</option>
+                        @endfor
+                    </select>
+                </div>
+            </td>
+            <td>
+                <div class="input-group">
+                    <span class="input-group-text" id="size-##index_line##-6">XXL</span>
+                    <select class="form-control" name="lines[##index_line##][XXL][quantity]">
+                        @for($i = 0; $i <= 99; $i++)
+                            <option value="{{$i}}">{{$i}}</option>
+                        @endfor
+                    </select>
+                </div>
             </td>
             <td>
                 <button type="button" class="btn btn-danger btn-sm remove-line">X</button>
@@ -190,8 +266,53 @@
 
 @section('script')
     <script>
-        let priceTshirt = 0;
+    let priceTshirt = 0;
+    const orderData = {
+        client_id: null,
+        comment: '',
+        lines: []
+    };
+
     $(document).ready(function() {
+
+        if(sessionStorage.getItem('orderData')) {
+            const orderData = JSON.parse(sessionStorage.getItem('orderData'));
+            $('#client_id').val(orderData.client_id);
+            $('#comment').val(orderData.comment);
+        } 
+
+        $('#order-form').on("change", function() {
+            const formData = $(this).serializeArray();
+
+            formData.forEach(item => {
+                console.log(orderData);
+                if(item.name.startsWith('lines')) {
+                    // Gestion des lignes de commande
+                    const lineMatch = item.name.match(/lines\[(\d+)\]\[(.*?)\](?:\[(.*?)\])?/);
+                    if (lineMatch) {
+                        const lineIndex = lineMatch[1];
+                        const key = lineMatch[2];
+                        const subKey = lineMatch[3] || null;
+
+                        if (!orderData.lines[lineIndex]) {
+                            orderData.lines[lineIndex] = {};
+                        }
+                        if (subKey) {
+                            if (!orderData.lines[lineIndex][key]) {
+                                orderData.lines[lineIndex][key] = {};
+                            }
+                            orderData.lines[lineIndex][key][subKey] = item.value;
+                        } else {
+                            orderData.lines[lineIndex][key] = item.value;
+                        }
+                    }
+                } else {
+                    orderData[item.name] = item.value;
+                }
+            });
+            sessionStorage.setItem('orderData', JSON.stringify(orderData));
+        });
+
         $('.select-product').select2({
             templateResult: formatState,
             templateSelection: formatState
@@ -203,34 +324,33 @@
         $('#add-line').on('click', function() {
             let template = $('#order-line-template').html()
                 .replace('##design_id##', `lines[${lineIndex}][design_id]`)
-                .replace('##size##', `lines[${lineIndex}][size]`)
+                .replace('lines[##index_line##][XS][quantity]', `lines[${lineIndex}][XS][quantity]`)
+                .replace('lines[##index_line##][S][quantity]', `lines[${lineIndex}][S][quantity]`)
+                .replace('lines[##index_line##][M][quantity]', `lines[${lineIndex}][M][quantity]`)
+                .replace('lines[##index_line##][L][quantity]', `lines[${lineIndex}][L][quantity]`)
+                .replace('lines[##index_line##][XL][quantity]', `lines[${lineIndex}][XL][quantity]`)
+                .replace('lines[##index_line##][XXL][quantity]', `lines[${lineIndex}][XXL][quantity]`)
+
+                .replace('size-##index_line##-1', `size-${lineIndex}-1`)
+                .replace('size-##index_line##-2', `size-${lineIndex}-2`)
+                .replace('size-##index_line##-3', `size-${lineIndex}-3`)
+                .replace('size-##index_line##-4', `size-${lineIndex}-4`)
+                .replace('size-##index_line##-5', `size-${lineIndex}-5`)
+                .replace('size-##index_line##-6', `size-${lineIndex}-6`)
+
                 .replace('##quantity##', `lines[${lineIndex}][quantity]`)
-                .replace('##price##', `lines[${lineIndex}][price]`);
+                .replace('##index_line##', `${lineIndex}`);
             $('#order-lines').append(template);
 
             $('.select-product').select2({
                 templateResult: formatState,
                 templateSelection: formatState
             });
-
-            $(`input[name="lines[${lineIndex}][price]"]`).val(priceTshirt);
-
             lineIndex++;
+
             updateTotals();
         });
 
-        // Ajouter une remise
-        $('#add-discount').on('click', function() {
-            let discount = prompt("Entrez le montant de la remise :");
-            if (discount !== null) {
-                discount = parseFloat(discount);
-                if (!isNaN(discount)) {
-                    $('#total-price').text((parseFloat($('#total-price').text()) - discount).toFixed(2) + '€');
-                } else {
-                    alert("Veuillez entrer un montant valide.");
-                }
-            }
-        });
 
         // Supprimer une ligne
         $(document).on('click', '.remove-line', function() {
@@ -238,34 +358,6 @@
             updateTotals();
         });
 
-        // Calcul des totaux
-        $(document).on('input change', '.quantity, .price, .select-size', function() {
-            updateTotals();
-        });
-
-        $('#client_id').on('change', function() {
-            const clientId = $(this).val();
-            if (clientId) {
-                $.ajax({
-                    url: `/client/getPriceTshirt`,
-                    method: 'post',
-                    data: {
-                        client_id: clientId,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(data) {
-                        // Traitez les données reçues ici
-                        console.log(data);
-                        priceTshirt = data.price_tshirt;
-                        $('input[name="lines[0][price]"]').val(priceTshirt);
-                    },
-                    error: function(xhr) {
-                        console.error(xhr);
-                    }
-                });
-            }
-
-        });
 
         function updateTotals() {
             let totalQuantity = 0;
@@ -295,5 +387,58 @@
             return $(`<span><img src="${thumbnail}" style="width: 30px; height: 30px; margin-right: 8px; object-fit: cover;" /> ${state.text}</span>`);
         }
     });
+
+    // Changer type de produit
+    function changeTypeProduct(event) {
+        const type = $(event.target).val();
+        console.log(type);
+        lineIndex = $(event.target).data('line-id');
+        if (type === 'TA' || type === 'SA' || type === 'SCA') {
+            $('#size-' + lineIndex + '-1').text('XS');
+            $('#size-' + lineIndex + '-2').text('S');
+            $('#size-' + lineIndex + '-3').text('M');
+            $('#size-' + lineIndex + '-4').text('L');
+            $('#size-' + lineIndex + '-5').text('XL');
+            $('#size-' + lineIndex + '-6').text('XXL');
+        } else if (type === 'TE' || type === 'SE' || type === 'SCE') {
+            $('#size-' + lineIndex + '-1').text('2Y');
+            $("[name='lines[" + lineIndex + "][XS][quantity]']").attr('name', `lines[${lineIndex}][2Y][quantity]`);
+
+            $('#size-' + lineIndex + '-2').text('4Y');
+            $("[name='lines[" + lineIndex + "][S][quantity]']").attr('name', `lines[${lineIndex}][4Y][quantity]`);
+
+            $('#size-' + lineIndex + '-3').text('6Y');
+            $("[name='lines[" + lineIndex + "][M][quantity]']").attr('name', `lines[${lineIndex}][6Y][quantity]`);
+
+            $('#size-' + lineIndex + '-4').text('8Y');
+            $("[name='lines[" + lineIndex + "][L][quantity]']").attr('name', `lines[${lineIndex}][8Y][quantity]`);
+
+            $('#size-' + lineIndex + '-5').text('10Y');
+            $("[name='lines[" + lineIndex + "][XL][quantity]']").attr('name', `lines[${lineIndex}][10Y][quantity]`);
+
+            $('#size-' + lineIndex + '-6').text('12Y');
+            $("[name='lines[" + lineIndex + "][XXL][quantity]']").attr('name', `lines[${lineIndex}][12Y][quantity]`);
+        }
+    }
+
+
+    // $('.product-type').on('change', function () {
+    //     const type = $(this).val();
+    //     if (type === 'TA' || type === 'SA' || type === 'SCA') {
+    //         $('#size-' + lineIndex + '-1').text('XS');
+    //         $('#size-' + lineIndex + '-2').text('S');
+    //         $('#size-' + lineIndex + '-3').text('M');
+    //         $('#size-' + lineIndex + '-4').text('L');
+    //         $('#size-' + lineIndex + '-5').text('XL');
+    //         $('#size-' + lineIndex + '-6').text('XXL');
+    //     } else if (type === 'TE' || type === 'SE' || type === 'SCE') {
+    //         $('#size-' + lineIndex + '-1').text('2Y');
+    //         $('#size-' + lineIndex + '-2').text('4Y');
+    //         $('#size-' + lineIndex + '-3').text('6Y');
+    //         $('#size-' + lineIndex + '-4').text('8Y');
+    //         $('#size-' + lineIndex + '-5').text('10Y');
+    //         $('#size-' + lineIndex + '-6').text('12Y');
+    //     }
+    // });
     </script>
 @endsection
