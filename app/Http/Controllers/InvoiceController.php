@@ -40,13 +40,12 @@ class InvoiceController extends Controller
         if ($paid) {
             if ($paid == '1') {
                 // Factures dont toutes les commandes sont payées
-                $invoices = $invoices->whereDoesntHave('orders', function ($query) {
-                    $query->where('paid', false);
-                });
+                $invoices = $invoices->where('paid', true);
             } elseif ($paid == '2') {
                 // Factures ayant au moins une commande non payée
-                $invoices = $invoices->whereHas('orders', function ($query) {
-                    $query->where('paid', false);
+                $invoices = $invoices->where(function ($query) {
+                    $query->where('paid', 0)
+                        ->orWhereNull('paid');
                 });
             }
         }

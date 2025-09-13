@@ -329,7 +329,7 @@ class OrderController extends Controller
             'delivery_date' => $validated['delivery_date'] ?? null,
             'updated_by' => $user->id,
         ];
-        if($validated['payment_date']) {
+        if(isset($validated['payment_date'])) {
             $orderData['paid'] = true;
         }
 

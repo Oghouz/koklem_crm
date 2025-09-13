@@ -211,7 +211,7 @@
             <div class="col-xs-12">
                 <span>Commandes facturées : </span><br>
                 @foreach($invoice->orders as $order)
-                    <span> </span> commande n°{{$order->id}} du {{\Carbon\Carbon::parse($order->delivery_date)->format('d/m/Y')}}<br>
+                    <span> </span> commande n°{{$order->id}} du {{\Carbon\Carbon::parse($order->created_at)->format('d/m/Y')}}<br>
                 @endforeach
             </div>
         </div>
