@@ -162,67 +162,6 @@
                             <button type="button" class="btn btn-danger btn-sm remove-line">X</button>
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            <select name="lines[0][design_id]" class="form-select select-product">
-                                <option value="">- Sélectionner un produit -</option>
-                                @foreach($designs as $design)
-                                    <option value="{{ $design->id }}" data-thumbnail="{{ asset('images/designs/' . $design->image) }}">
-                                        {{ $design->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
-                        <td>
-                            <select class="form-select" class="product-type" data-line-id="0" onchange="changeTypeProduct(event)">
-                                <option value="TA">T-shirt adulte</option>
-                                <option value="SA">Sweat adulte</option>
-                                <option value="SCA">Sweat cap adulte</option>
-                                <option value="TE">T-shirt enfant</option>
-                                <option value="SE">Sweat enfant</option>
-                                <option value="SCE">Sweat cap enfant</option>
-                            </select>
-                        </td>
-                        <td>
-                            <div class="form-floating">
-                                <input class="form-control" id="floatingInputBudget" type="text" placeholder="Budget">
-                                <label for="floatingInputBudget">XS</label>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-floating">
-                                <input class="form-control" id="floatingInputBudget" type="text" placeholder="Budget">
-                                <label for="floatingInputBudget">S</label>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-floating">
-                                <input class="form-control" id="floatingInputBudget" type="text" placeholder="Budget">
-                                <label for="floatingInputBudget">M</label>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-floating">
-                                <input class="form-control" id="floatingInputBudget" type="text" placeholder="Budget">
-                                <label for="floatingInputBudget">L</label>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-floating">
-                                <input class="form-control" id="floatingInputBudget" type="text" placeholder="Budget">
-                                <label for="floatingInputBudget">XL</label>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-floating">
-                                <input class="form-control" id="floatingInputBudget" type="text" placeholder="Budget">
-                                <label for="floatingInputBudget">XXL</label>
-                            </div>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm remove-line">X</button>
-                        </td>
-                    </tr>
                 </tbody>
                 <tfoot>
 
