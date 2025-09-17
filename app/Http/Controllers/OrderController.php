@@ -132,7 +132,6 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
         $user = Auth::user();
         $validated = $request->validate([
             'client_id' => 'nullable|exists:clients,id',
